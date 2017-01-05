@@ -19,23 +19,23 @@ BEGIN {
 use experimental    (); # need this later when we load features
 use Module::Runtime ();
 
-use mop;
-use mop::internal::util;
+use MOP;
+use MOP::Internal::Util;
 
 use Moxie::Util;
 use Moxie::Util::Syntax;
 
-sub mop::object::DOES {
+sub MOP::Object::DOES {
     my ($self, $role) = @_;
     my $class = ref $self || $self;
     # if we inherit from this, we are good ...
     return 1 if $class->isa( $role );
     # next check the roles ...
-    my $meta = mop::class->new( name => $class );
+    my $meta = MOP::Class->new( name => $class );
     # test just the local (and composed) roles first ...
     return 1 if $meta->does_role( $role );
     # then check the inheritance hierarchy next ...
-    return 1 if scalar grep { mop::class->new( name => $_ )->does_role( $role ) } @{ $meta->mro };
+    return 1 if scalar grep { MOP::Class->new( name => $_ )->does_role( $role ) } @{ $meta->mro };
     return 0;
 }
 
@@ -48,7 +48,7 @@ our %TRAITS;
 # object system if they want. The idea is that the
 # simple, bare bones sugar I provide here is just barely
 # one step above the raw version which uses the package
-# variables and mop::internal::util::* methods directly
+# variables and MOP::Internal::Util::* methods directly
 # inside BEGIN blocks, etc.
 #
 # In short, there is no need to make people jump through
@@ -73,7 +73,7 @@ sub import {
 
         # FIXME:
         # There are a lot of assumptions here that
-        # we are not loading mop.pm in a package
+        # we are not loading MOP.pm in a package
         # where it might have already been loaded
         # so we might want to keep that in mind
         # and guard against some of that below,
@@ -87,10 +87,10 @@ sub import {
         # with this as a role, but it will
         # get "cast" to a class if there
         # is a need for it.
-        my $meta = mop::role->new( name => $caller );
+        my $meta = MOP::Role->new( name => $caller );
 
         # install our finalizer feature ...
-        mop::internal::util::INSTALL_FINALIZATION_RUNNER( $caller );
+        MOP::Internal::Util::INSTALL_FINALIZATION_RUNNER( $caller );
 
         # turn on strict/warnings
         strict->import;
@@ -122,7 +122,7 @@ sub import {
                 # specially, everything else gets
                 # called as a trait ...
                 $traits{default} //= delete $traits{required}
-                    ? eval 'package '.$caller.'; sub { die "[mop::ERROR] The attribute \'$name\' is required" }'
+                    ? eval 'package '.$caller.'; sub { die "[MOP::ERROR] The attribute \'$name\' is required" }'
                     : eval 'package '.$caller.'; sub { undef }'; # we need this to be a unique CV ... sigh
 
                 $meta->add_attribute( $name, delete $traits{default} );
@@ -130,7 +130,7 @@ sub import {
                 if ( keys %traits ) {
                     my $attr = $meta->get_attribute( $name );
                     foreach my $k ( keys %traits ) {
-                        die "[mop::PANIC] Cannot locate trait ($k) to apply to attributes ($name)"
+                        die "[MOP::PANIC] Cannot locate trait ($k) to apply to attributes ($name)"
                             unless exists $TRAITS{ $k };
                         $TRAITS{ $k }->( $meta, $attr, $traits{ $k } );
                     }
@@ -143,9 +143,9 @@ sub import {
             ($caller, 'extends') => sub {
                 my @isa = @_;
                 Module::Runtime::use_package_optimistically( $_ ) foreach @isa;
-                ($meta->isa('mop::class')
+                ($meta->isa('MOP::Class')
                     ? $meta
-                    : (bless $meta => 'mop::class') # cast into class
+                    : (bless $meta => 'MOP::Class') # cast into class
                 )->set_superclasses( @isa );
                 return;
             }
@@ -163,7 +163,7 @@ sub import {
         # install our class finalizers
         $meta->add_finalizer(sub {
 
-            if ( $meta->isa('mop::class') ) {
+            if ( $meta->isa('MOP::Class') ) {
                 # make sure to 'inherit' the required methods ...
                 Moxie::Util::INHERIT_REQUIRED_METHODS( $meta );
 
@@ -174,10 +174,10 @@ sub import {
 
             # apply roles ...
             if ( my @does = $meta->roles ) {
-                mop::internal::util::APPLY_ROLES(
+                MOP::Internal::Util::APPLY_ROLES(
                     $meta,
                     \@does,
-                    to => ($meta->isa('mop::class') ? 'class' : 'role')
+                    to => ($meta->isa('MOP::Class') ? 'class' : 'role')
                 );
             }
 
@@ -288,7 +288,7 @@ BEGIN {
         } elsif ( $type eq 'rw' ) {
             $TRAITS{'writer'}->( $m, $a, $a->name );
         } else {
-            die "[mop::PANIC] Got strange option ($type) to trait (is)";
+            die "[MOP::PANIC] Got strange option ($type) to trait (is)";
         }
     };
 }
@@ -308,7 +308,7 @@ Moxie
     package Point {
         use Moxie;
 
-        extends 'mop::object';
+        extends 'MOP::Object';
 
         has 'x' => (is => 'ro', default => sub { 0 });
         has 'y' => (is => 'ro', default => sub { 0 });
@@ -334,7 +334,7 @@ Moxie
 =head1 DESCRIPTION
 
 Moxie is a reference implemenation for an object system built
-on top of the mop. It is purposefully meant to be similar to
+on top of the MOP. It is purposefully meant to be similar to
 the Moose/Mouse/Moo style of classes, but with a number of
 improvements as well.
 
