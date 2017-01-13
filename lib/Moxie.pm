@@ -163,9 +163,12 @@ sub import {
             }
         );
 
-        # install our class finalizers
-        use Devel::Hook;
-        Devel::Hook->push_UNITCHECK_hook(sub {
+        # install our class finalizers in the
+        # reverse order so that the first one
+        # encountered goes first, this is the
+        # reverse of the usual UNITCHECK way
+        # but is what we need here.
+        B::CompilerPhase::Hook::append_UNITCHECK {
 
             # pre-populate the cache for all the slots
             GATHER_ALL_SLOTS( $meta )
@@ -180,7 +183,7 @@ sub import {
                     to => ($meta->isa('MOP::Class') ? 'class' : 'role')
                 );
             }
-        });
+        };
     }
 
 }
