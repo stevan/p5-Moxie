@@ -17,8 +17,6 @@ use B::CompilerPhase::Hook (); # multi-phase programming
 use MOP;
 use MOP::Internal::Util;
 
-use Moxie::Util;
-
 # FIXME:
 # This is bad ...
 sub UNIVERSAL::Object::DOES {
@@ -33,6 +31,18 @@ sub UNIVERSAL::Object::DOES {
     # then check the inheritance hierarchy next ...
     return 1 if scalar grep { MOP::Class->new( name => $_ )->does_role( $role ) } @{ $meta->mro };
     return 0;
+}
+
+sub GATHER_ALL_SLOTS {
+    my ($meta) = @_;
+    foreach my $super ( map { MOP::Role->new( name => $_ ) } @{ $meta->mro } ) {
+        foreach my $attr ( $super->slots ) {
+            $meta->alias_slot( $attr->name, $attr->initializer )
+                unless $meta->has_slot( $attr->name )
+                    || $meta->has_slot_alias( $attr->name );
+        }
+    }
+    return;
 }
 
 our %TRAITS;
@@ -155,16 +165,11 @@ sub import {
 
         # install our class finalizers
         use Devel::Hook;
-        Devel::Hook->push_UNITCHECK_hook( sub {
+        Devel::Hook->push_UNITCHECK_hook(sub {
 
-            if ( $meta->isa('MOP::Class') ) {
-                # make sure to 'inherit' the required methods ...
-                Moxie::Util::INHERIT_REQUIRED_METHODS( $meta );
-
-                # this is an optimization to pre-populate the
-                # cache for all the slots
-                Moxie::Util::GATHER_ALL_SLOTS( $meta );
-            }
+            # pre-populate the cache for all the slots
+            GATHER_ALL_SLOTS( $meta )
+                if $meta->isa('MOP::Class');
 
             # apply roles ...
             if ( my @does = $meta->roles ) {
