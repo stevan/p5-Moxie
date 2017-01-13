@@ -1,10 +1,12 @@
 package Moxie;
 # ABSTRACT: Yet Another Moose Clone
 
-use v5.20;
-
-use strict;
+use v5.22;
 use warnings;
+use experimental qw[
+    signatures
+    postderef
+];
 
 our $VERSION   = '0.01';
 our $AUTHORITY = 'cpan:STEVAN';
@@ -19,8 +21,7 @@ use MOP::Internal::Util;
 
 # FIXME:
 # This is bad ...
-sub UNIVERSAL::Object::DOES {
-    my ($self, $role) = @_;
+sub UNIVERSAL::Object::DOES ($self, $role) {
     my $class = ref $self || $self;
     # if we inherit from this, we are good ...
     return 1 if $class->isa( $role );
@@ -29,13 +30,12 @@ sub UNIVERSAL::Object::DOES {
     # test just the local (and composed) roles first ...
     return 1 if $meta->does_role( $role );
     # then check the inheritance hierarchy next ...
-    return 1 if scalar grep { MOP::Class->new( name => $_ )->does_role( $role ) } @{ $meta->mro };
+    return 1 if scalar grep { MOP::Class->new( name => $_ )->does_role( $role ) } $meta->mro->@*;
     return 0;
 }
 
-sub GATHER_ALL_SLOTS {
-    my ($meta) = @_;
-    foreach my $super ( map { MOP::Role->new( name => $_ ) } @{ $meta->mro } ) {
+sub GATHER_ALL_SLOTS ($meta) {
+    foreach my $super ( map { MOP::Role->new( name => $_ ) } $meta->mro->@* ) {
         foreach my $attr ( $super->slots ) {
             $meta->alias_slot( $attr->name, $attr->initializer )
                 unless $meta->has_slot( $attr->name )
@@ -65,8 +65,7 @@ our %TRAITS;
 # and re-use.
 # - SL
 
-sub import {
-    my ($class, @args) = @_;
+sub import ($class, @args) {
 
     # get the caller ...
     my $caller = caller;
@@ -118,8 +117,7 @@ sub import {
 
         # import has, extend and with keyword
         BEGIN::Lift::install(
-            ($caller, 'has') => sub {
-                my ($name, %traits) = @_;
+            ($caller, 'has') => sub ($name, %traits) {
 
                 # this is the only one we handle
                 # specially, everything else gets
@@ -143,8 +141,7 @@ sub import {
         );
 
         BEGIN::Lift::install(
-            ($caller, 'extends') => sub {
-                my @isa = @_;
+            ($caller, 'extends') => sub (@isa) {
                 Module::Runtime::use_package_optimistically( $_ ) foreach @isa;
                 ($meta->isa('MOP::Class')
                     ? $meta
@@ -155,8 +152,7 @@ sub import {
         );
 
         BEGIN::Lift::install(
-            ($caller, 'with') => sub {
-                my @does = @_;
+            ($caller, 'with') => sub (@does) {
                 Module::Runtime::use_package_optimistically( $_ ) foreach @does;
                 $meta->set_roles( @does );
                 return;
