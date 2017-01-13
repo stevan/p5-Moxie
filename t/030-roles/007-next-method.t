@@ -11,7 +11,7 @@ my ($foo, $bar);
 package Foo {
     use Moxie;
 
-    extends 'MOP::Object';
+    extends 'UNIVERSAL::Object';
 
     sub foo ($self) { $::foo++ }
 }

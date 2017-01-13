@@ -24,7 +24,7 @@ up.
 package Foo {
     use Moxie;
 
-    extends 'MOP::Object';
+    extends 'UNIVERSAL::Object';
 
     sub bar { 'BAR' }
 

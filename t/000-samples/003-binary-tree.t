@@ -22,7 +22,7 @@ Make the parent a weak-ref ... it is not right now.
 package BinaryTree {
     use Moxie;
 
-    extends 'MOP::Object';
+    extends 'UNIVERSAL::Object';
 
     has 'node'   => ( is => 'rw' );
     has 'parent' => ( is => 'ro', predicate => 'has_parent' );
@@ -32,8 +32,6 @@ package BinaryTree {
     sub left  ($self) { $self->{left}  //= ref($self)->new( parent => $self ) }
     sub right ($self) { $self->{right} //= ref($self)->new( parent => $self ) }
 }
-
-#my $parent_attr = MOP::meta('BinaryTree')->get_attribute('$!parent');
 
 {
     my $t = BinaryTree->new;

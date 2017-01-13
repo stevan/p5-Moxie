@@ -13,7 +13,7 @@ BEGIN {
 package Point {
     use Moxie;
 
-    extends 'MOP::Object';
+    extends 'UNIVERSAL::Object';
 
     has 'x' => ( is => 'ro', default => sub { 0 } );
     has 'y' => ( is => 'ro', default => sub { 0 } );
@@ -62,7 +62,7 @@ subtest '... test an instance of Point' => sub {
 
     is_deeply(
         mro::get_linear_isa('Point'),
-        [ 'Point', 'MOP::Object' ],
+        [ 'Point', 'UNIVERSAL::Object' ],
         '... got the expected linear isa'
     );
 
@@ -86,7 +86,7 @@ subtest '... test an instance of Point3D' => sub {
 
     is_deeply(
         mro::get_linear_isa('Point3D'),
-        [ 'Point3D', 'Point', 'MOP::Object' ],
+        [ 'Point3D', 'Point', 'UNIVERSAL::Object' ],
         '... got the expected linear isa'
     );
 
@@ -126,10 +126,10 @@ subtest '... meta test' => sub {
 
         my $Point = MOP::Class->new( name => 'Point' );
         isa_ok($Point, 'MOP::Class');
-        isa_ok($Point, 'MOP::Object');
+        isa_ok($Point, 'UNIVERSAL::Object');
 
-        is_deeply($Point->mro, [ 'Point', 'MOP::Object' ], '... got the expected mro');
-        is_deeply([ $Point->superclasses ], [ 'MOP::Object' ], '... got the expected superclasses');
+        is_deeply($Point->mro, [ 'Point', 'UNIVERSAL::Object' ], '... got the expected mro');
+        is_deeply([ $Point->superclasses ], [ 'UNIVERSAL::Object' ], '... got the expected superclasses');
 
         foreach ( @Point_methods ) {
             ok($Point->has_method( $_ ), '... Point has method ' . $_);
@@ -138,7 +138,7 @@ subtest '... meta test' => sub {
             isa_ok($m, 'MOP::Method');
             is($m->name, $_, '... got the right method name (' . $_ . ')');
             ok(!$m->is_required, '... the ' . $_ . ' method is not a required method');
-            is($m->origin_class, 'Point', '... the ' . $_ . ' method was defined in Point class')
+            is($m->origin_stash, 'Point', '... the ' . $_ . ' method was defined in Point class')
         }
 
         ok(Point->can( $_ ), '... Point can call method ' . $_)

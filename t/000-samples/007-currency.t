@@ -59,7 +59,7 @@ BEGIN {
     package US::Currency {
         use Moxie;
 
-        extends 'MOP::Object';
+        extends 'UNIVERSAL::Object';
            with 'Comparable', 'Printable';
 
         has amount => ( default => sub { 0 } );

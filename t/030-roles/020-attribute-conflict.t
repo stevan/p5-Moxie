@@ -5,13 +5,24 @@ use warnings;
 
 use Test::More;
 
-package Foo {
-    use Moxie;
+our (
+    $FOO_EXCEPTION,
+    $FOO_BAR_EXCEPTION,
+    $FOO_BAZ_EXCEPTION,
+);
 
-    has 'foo';
-}
+BEGIN {
+    package Foo {
+        use Moxie;
 
-{
+        has 'foo';
+    }
+    package Bar {
+        use Moxie;
+
+        has 'foo';
+    }
+
     eval q[
         package Foo2 {
             use Moxie;
@@ -19,41 +30,31 @@ package Foo {
             has 'foo';
         }
     ];
-    like("$@", qr/^\[MOP\:\:PANIC\] Role Conflict, cannot compose attribute \(foo\) into \(Foo2\) because \(foo\) already exists/, '... got the expected error message (role on role)');
-    $@ = undef;
-}
+    $FOO_EXCEPTION = $@;
 
-package Bar {
-    use Moxie;
-
-    has 'foo';
-}
-
-{
     eval q[
         package FooBar {
             use Moxie;
             with 'Foo', 'Bar';
         }
     ];
-    like("$@", qr/^\[MOP\:\:PANIC\] There should be no conflicting attributes when composing \(Foo, Bar\) into \(FooBar\)/, '... got the expected error message (composite role)');
-    $@ = undef;
-}
+    $FOO_BAR_EXCEPTION = $@;
 
-
-{
     eval q[
         package FooBaz {
             use Moxie;
 
-            extends 'MOP::Object';
+            extends 'UNIVERSAL::Object';
                with 'Foo';
 
             has 'foo';
         }
     ];
-    like("$@", qr/^\[MOP\:\:PANIC\] Role Conflict, cannot compose attribute \(foo\) into \(FooBaz\) because \(foo\) already exists/, '... got the expected error message (role on class)');
-    $@ = undef;
+    $FOO_BAZ_EXCEPTION = $@;
 }
+
+like($FOO_EXCEPTION, qr/^\[CONFLICT\] Role Conflict, cannot compose slot \(foo\) into \(Foo2\) because \(foo\) already exists/, '... got the expected error message (role on role)');
+like($FOO_BAR_EXCEPTION, qr/^\[CONFLICT\] There should be no conflicting slots when composing \(Foo, Bar\) into \(FooBar\)/, '... got the expected error message (composite role)');
+like($FOO_BAZ_EXCEPTION, qr/^\[CONFLICT\] Role Conflict, cannot compose slot \(foo\) into \(FooBaz\) because \(foo\) already exists/, '... got the expected error message (role on class)');
 
 done_testing;

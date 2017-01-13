@@ -26,7 +26,7 @@ package Baz {
 package Gorch {
     use Moxie;
 
-    extends 'MOP::Object';
+    extends 'UNIVERSAL::Object';
        with 'Baz';
 }
 
@@ -43,9 +43,9 @@ package Gorch {
     ok( $baz_method->isa( 'MOP::Method' ), '... got a method object' );
     is( $baz_method->name, 'baz', '... got the method we expected' );
 
-    my $bar_attribute = $baz_meta->get_attribute_alias('bar');
-    ok( $bar_attribute->isa( 'MOP::Attribute' ), '... got an attribute object' );
-    is( $bar_attribute->name, 'bar', '... got the attribute we expected' );
+    my $bar_slot = $baz_meta->get_slot_alias('bar');
+    ok( $bar_slot->isa( 'MOP::Slot' ), '... got an slot object' );
+    is( $bar_slot->name, 'bar', '... got the slot we expected' );
 
     my $bar_method_alias = $baz_meta->get_method_alias('bar');
     ok( $bar_method_alias->isa( 'MOP::Method' ), '... got a method object' );
@@ -65,9 +65,9 @@ package Gorch {
     ok( $baz_method->isa( 'MOP::Method' ), '... got a method object' );
     is( $baz_method->name, 'baz', '... got the method we expected' );
 
-    my $bar_attribute = $gorch_meta->get_attribute_alias('bar');
-    ok( $bar_attribute->isa( 'MOP::Attribute' ), '... got an attribute object' );
-    is( $bar_attribute->name, 'bar', '... got the attribute we expected' );
+    my $bar_slot = $gorch_meta->get_slot_alias('bar');
+    ok( $bar_slot->isa( 'MOP::Slot' ), '... got an slot object' );
+    is( $bar_slot->name, 'bar', '... got the slot we expected' );
 }
 
 {

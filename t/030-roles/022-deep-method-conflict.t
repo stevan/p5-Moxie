@@ -5,29 +5,46 @@ use warnings;
 
 use Test::More;
 
-package Service {
-    use Moxie;
+our $EXCEPTION;
 
-    sub is_locked { 0 }
+BEGIN {
+
+    package Service {
+        use Moxie;
+
+        sub is_locked { 0 }
+    }
+
+    package WithClass {
+        use Moxie;
+
+        with 'Service';
+    }
+
+    package WithParameters {
+        use Moxie;
+
+        with 'Service';
+    }
+
+    package WithDependencies {
+        use Moxie;
+
+        with 'Service';
+    }
+
+    eval q[
+        package ConstructorInjection {
+            use Moxie;
+
+            extends 'UNIVERSAL::Object';
+               with 'WithClass', 'WithParameters', 'WithDependencies';
+        }
+    ];
+    $EXCEPTION = $@;
 }
 
-package WithClass {
-    use Moxie;
-
-    with 'Service';
-}
-
-package WithParameters {
-    use Moxie;
-
-    with 'Service';
-}
-
-package WithDependencies {
-    use Moxie;
-
-    with 'Service';
-}
+is($EXCEPTION, '', '... this worked');
 
 foreach my $role (map { MOP::Role->new( name => $_ ) } qw[
     WithClass
@@ -42,18 +59,5 @@ foreach my $role (map { MOP::Role->new( name => $_ ) } qw[
         '... these roles should then show the is_locked method'
     );
 };
-
-{
-    local $@;
-    eval q[
-        package ConstructorInjection {
-            use Moxie;
-
-            extends 'MOP::Object';
-               with 'WithClass', 'WithParameters', 'WithDependencies';
-        }
-    ];
-    is($@, "", '... this worked');
-}
 
 done_testing;

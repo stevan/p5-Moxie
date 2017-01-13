@@ -34,7 +34,7 @@ BEGIN {
 package Cache {
     use Moxie;
 
-    extends 'MOP::Object';
+    extends 'UNIVERSAL::Object';
 
     has 'fetcher' => (required => 1);
     has 'data'    => ( predicate => 'has_data', clearer => 'clear' );

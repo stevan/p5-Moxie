@@ -8,7 +8,7 @@ use Test::More;
 =pod
 
 Every new instance created should be a new reference
-and all attribute data in it should be a clone of the
+and all slot data in it should be a clone of the
 original data itself, unless you reference something
 that already exists, then it will work as expected.
 
@@ -27,7 +27,7 @@ our $BAZ; BEGIN { $BAZ = [] };
 package Foo {
     use Moxie;
 
-    extends 'MOP::Object';
+    extends 'UNIVERSAL::Object';
 
     has bar => ( default => sub { +{ baz => $::BAZ } } );
 
@@ -50,7 +50,7 @@ is( $foo->bar->{'baz'}, $BAZ, '... these are the same values' );
 package Bar {
     use Moxie;
 
-    extends 'MOP::Object';
+    extends 'UNIVERSAL::Object';
 
     has bar => ( default => sub { +{ baz => $::BAZ } } );
 

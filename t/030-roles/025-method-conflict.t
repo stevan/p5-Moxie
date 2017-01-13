@@ -50,7 +50,7 @@ package FooBar {
 package FooBarClass {
     use Moxie;
 
-    extends 'MOP::Object';
+    extends 'UNIVERSAL::Object';
        with 'Foo', 'Bar';
 
     sub foo { 'FooBarClass::foo' }
@@ -66,51 +66,27 @@ package FooBarClass {
     ok($Bar->has_method('foo'), '... Bar still has the foo method');
 }
 
-{
+BEGIN {
     local $@ = undef;
     eval q[
         package FooBarBrokenClass1 {
             use Moxie;
 
-            extends 'MOP::Object';
+            extends 'UNIVERSAL::Object';
                with 'Foo', 'Bar';
         }
     ];
     like(
         "$@",
-        qr/^\[MOP\:\:PANIC\] There should be no conflicting methods when composing \(Foo, Bar\) into the class \(FooBarBrokenClass1\) but instead we found \(foo\)/,
+        qr/^\[CONFLICT\] There should be no conflicting methods when composing \(Foo, Bar\) into the class \(FooBarBrokenClass1\) but instead we found \(foo\)/,
         '... got the exception we expected'
     );
-}
-
-{
-    local $@ = undef;
-    eval q[
-        package Gorch {
-            use Moxie;
-
-            extends 'MOP::Object';
-               with 'Foo', 'Bar';
-
-            our $IS_ABSTRACT; BEGIN {
-                $IS_ABSTRACT = 1;
-            }
-        }
-    ];
-    ok(!$@, '... no exception because the class is declared abstract');
-
-    my $Gorch = MOP::Class->new( name => 'Gorch' );
-    my ($Foo, $Bar) = map { MOP::Role->new( name => $_ ) } qw[ Foo Bar ];
-    is_deeply([ map { $_->name } $Gorch->required_methods ], ['foo'], '... method conflict between roles results in required method');
-    ok(!$Gorch->has_method('foo'), '... Gorch does not have the foo method');
-    ok($Foo->has_method('foo'), '... Foo still has the foo method');
-    ok($Bar->has_method('foo'), '... Bar still has the foo method');
 }
 
 package Baz {
     use Moxie;
 
-    extends 'MOP::Object';
+    extends 'UNIVERSAL::Object';
        with 'Foo';
 
     sub foo { 'Baz::foo' }

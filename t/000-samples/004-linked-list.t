@@ -13,7 +13,7 @@ BEGIN {
 package LinkedList {
     use Moxie;
 
-    extends 'MOP::Object';
+    extends 'UNIVERSAL::Object';
 
     has 'head'  => ( is => 'ro' );
     has 'tail'  => ( is => 'ro' );
@@ -81,7 +81,7 @@ package LinkedList {
 package LinkedListNode {
     use Moxie;
 
-    extends 'MOP::Object';
+    extends 'UNIVERSAL::Object';
 
     has 'previous' => ( reader => 'get_previous', writer => 'set_previous' );
     has 'next'     => ( reader => 'get_next',     writer => 'set_next'     );

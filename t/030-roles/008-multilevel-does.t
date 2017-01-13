@@ -18,7 +18,7 @@ package Bar {
 package Baz {
     use Moxie;
 
-    extends 'MOP::Object';
+    extends 'UNIVERSAL::Object';
        with 'Bar';
 }
 
@@ -42,7 +42,7 @@ package R3 {
 package C1 {
     use Moxie;
 
-    extends 'MOP::Object';
+    extends 'UNIVERSAL::Object';
        with 'R3';
 }
 

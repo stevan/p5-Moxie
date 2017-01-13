@@ -15,9 +15,9 @@ original comment for posterity.
 
 # NOTE FROM p5-MOP-redux TEST
 
-This test illustrates how the attributes are
+This test illustrates how the slots are
 private and allocated on a per-class basis.
-So when you override an attribute in a subclass
+So when you override an slot in a subclass
 the methods of the superclass will not get
 the value 'virtually', since the storage is
 class specific.
@@ -28,7 +28,7 @@ that is more what I think people would expect.
 
 The solution to making this work like the
 older prototype would be to lookup the
-attribute storage hash on each method call,
+slot storage hash on each method call,
 this should then give us the virtual behavior
 but it seems a lot of overhead, so perhaps
 I will just punt until we do the real thing.
@@ -38,7 +38,7 @@ I will just punt until we do the real thing.
 package Foo {
     use Moxie;
 
-    extends 'MOP::Object';
+    extends 'UNIVERSAL::Object';
 
     has 'bar' => (default => sub { 10 });
 

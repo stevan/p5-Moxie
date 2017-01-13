@@ -10,7 +10,7 @@ my $collector;
 package Foo {
     use Moxie;
 
-    extends 'MOP::Object';
+    extends 'UNIVERSAL::Object';
 
     sub collect ($self, $stuff) {
         push @{ $collector } => $stuff;

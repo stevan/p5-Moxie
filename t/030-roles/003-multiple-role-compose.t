@@ -30,7 +30,7 @@ package Baz {
 package Gorch {
     use Moxie;
 
-    extends 'MOP::Object';
+    extends 'UNIVERSAL::Object';
        with 'Baz';
 }
 
@@ -41,17 +41,17 @@ my $bar_method = MOP::Role->new(name => 'Baz')->get_method('bar');
 ok( $bar_method->isa( 'MOP::Method' ), '... got a method object' );
 is( $bar_method->name, 'bar', '... got the method we expected' );
 
-my $bar_attribute = MOP::Role->new(name => 'Baz')->get_attribute('bar');
-ok( $bar_attribute->isa( 'MOP::Attribute' ), '... got an attribute object' );
-is( $bar_attribute->name, 'bar', '... got the attribute we expected' );
+my $bar_slot = MOP::Role->new(name => 'Baz')->get_slot('bar');
+ok( $bar_slot->isa( 'MOP::Slot' ), '... got an slot object' );
+is( $bar_slot->name, 'bar', '... got the slot we expected' );
 
 my $foo_method = MOP::Role->new(name => 'Baz')->get_method('foo');
 ok( $foo_method->isa( 'MOP::Method' ), '... got a method object' );
 is( $foo_method->name, 'foo', '... got the method we expected' );
 
-my $foo_attribute = MOP::Role->new(name => 'Baz')->get_attribute('foo');
-ok( $foo_attribute->isa( 'MOP::Attribute' ), '... got an attribute object' );
-is( $foo_attribute->name, 'foo', '... got the attribute we expected' );
+my $foo_slot = MOP::Role->new(name => 'Baz')->get_slot('foo');
+ok( $foo_slot->isa( 'MOP::Slot' ), '... got an slot object' );
+is( $foo_slot->name, 'foo', '... got the slot we expected' );
 
 my $baz_method = MOP::Role->new(name => 'Baz')->get_method('baz');
 ok( $baz_method->isa( 'MOP::Method' ), '... got a method object' );

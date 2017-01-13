@@ -14,7 +14,7 @@ use Test::More;
 package Foo {
     use Moxie;
 
-    extends 'MOP::Object';
+    extends 'UNIVERSAL::Object';
 
     has 'bar';
 

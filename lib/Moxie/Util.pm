@@ -1,10 +1,13 @@
 package Moxie::Util;
+# ABSTRACT: Utils for Yet Another Moose Clone
 
 use strict;
 use warnings;
 
 our $VERSION   = '0.01';
 our $AUTHORITY = 'cpan:STEVAN';
+
+use MOP;
 
 ## Inheriting required methods
 
@@ -16,27 +19,25 @@ sub INHERIT_REQUIRED_METHODS {
                 unless $meta->has_method( $required_method->name );
         }
     }
-    $meta->set_is_abstract(1)
-        if $meta->required_methods;
     return;
 }
 
-## Attribute gathering ...
+## Slot gathering ...
 
 # NOTE:
 # The %HAS variable will cache things much like
 # the package stash method/cache works. It will
-# be possible to distinguish the local attributes
+# be possible to distinguish the local slots
 # from the inherited ones because the default sub
 # will have a different stash name.
 
-sub GATHER_ALL_ATTRIBUTES {
+sub GATHER_ALL_SLOTS {
     my ($meta) = @_;
     foreach my $super ( map { MOP::Role->new( name => $_ ) } @{ $meta->mro } ) {
-        foreach my $attr ( $super->attributes ) {
-            $meta->alias_attribute( $attr->name, $attr->initializer )
-                unless $meta->has_attribute( $attr->name )
-                    || $meta->has_attribute_alias( $attr->name );
+        foreach my $attr ( $super->slots ) {
+            $meta->alias_slot( $attr->name, $attr->initializer )
+                unless $meta->has_slot( $attr->name )
+                    || $meta->has_slot_alias( $attr->name );
         }
     }
     return;
@@ -45,3 +46,11 @@ sub GATHER_ALL_ATTRIBUTES {
 1;
 
 __END__
+
+=pod
+
+=head1 DESCRIPTION
+
+No user serviceable parts inside.
+
+=cut
