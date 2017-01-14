@@ -15,16 +15,11 @@ package Point {
 
     extends 'UNIVERSAL::Object';
 
-    has 'x' => ( is => 'ro', default => sub { 0 } );
-    has 'y' => ( is => 'ro', default => sub { 0 } );
+    has x => sub { 0 };
+    has y => sub { 0 };
 
-    sub set_x ($self, $x) {
-        $self->{x} = $x;
-    }
-
-    sub set_y ($self, $y) {
-        $self->{y} = $y;
-    }
+    sub x : is(ro) writer(set_x);
+    sub y : is(ro) writer(set_y);
 
     sub clear ($self) {
         @{ $self }{'x', 'y'} = (0, 0);
@@ -42,11 +37,9 @@ package Point3D {
 
     extends 'Point';
 
-    has 'z' => ( is => 'ro', default => sub { 0 } );
+    has z => sub { 0 };
 
-    sub set_z ($self, $z) {
-        $self->{z} = $z;
-    }
+    sub z : is(ro) writer(set_z);
 
     sub pack ($self) {
         my $data = $self->next::method;

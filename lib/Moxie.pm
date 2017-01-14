@@ -98,6 +98,9 @@ sub import ($class, @args) {
         strict->import;
         warnings->import;
 
+        # so we can have fun with attributes ...
+        warnings->unimport('reserved');
+
         # turn on signatures and more
         experimental->import($_) foreach qw[
             signatures
@@ -117,7 +120,15 @@ sub import ($class, @args) {
 
         # import has, extend and with keyword
         BEGIN::Lift::install(
-            ($caller, 'has') => sub ($name, %traits) {
+            ($caller, 'has') => sub ($name, @args) {
+
+                my %traits;
+                if ( scalar(@args) == 1 && ref $args[0] eq 'CODE' ) {
+                    %traits = ( default => $args[0] );
+                }
+                else {
+                    %traits = @args;
+                }
 
                 # this is the only one we handle
                 # specially, everything else gets
@@ -159,6 +170,33 @@ sub import ($class, @args) {
             }
         );
 
+        # This next step, we want to do
+        # immediately after this import
+        # method (and the BEGIN block it
+        # is contained within) finishes
+
+        # since these are BEGIN blocks,
+        # they need to be enqueued in
+        # the reverse order they will
+        # run in order to have the method
+        # not trip up role composiiton
+        B::CompilerPhase::Hook::enqueue_BEGIN {
+            $meta->delete_method_alias('MODIFY_CODE_ATTRIBUTES')
+        };
+        B::CompilerPhase::Hook::enqueue_BEGIN {
+            $meta->alias_method(
+                MODIFY_CODE_ATTRIBUTES => sub {
+                    my (undef, $code, @attrs) = @_;
+                    map {
+                        $_ =~ m/^(.*)\((.*)\)$/;
+                        #warn "$1 => $2";
+                        $TRAITS{ $1 }->( $meta, $meta->get_slot( MOP::Method->new( $code )->name ), $2 );
+                    } @attrs;
+                    ();
+                }
+            );
+        };
+
         # install our class finalizers in the
         # reverse order so that the first one
         # encountered goes first, this is the
@@ -179,6 +217,7 @@ sub import ($class, @args) {
                     to => ($meta->isa('MOP::Class') ? 'class' : 'role')
                 );
             }
+
         };
     }
 
