@@ -15,9 +15,13 @@ package LinkedList {
 
     extends 'UNIVERSAL::Object';
 
-    has 'head'  => ( is => 'ro' );
-    has 'tail'  => ( is => 'ro' );
-    has 'count' => ( is => 'ro', default => sub { 0 } );
+    has 'head';
+    has 'tail';
+    has 'count' => sub { 0 };
+
+    sub head  : is(ro);
+    sub tail  : is(ro);
+    sub count : is(ro);
 
     sub append ($self, $node) {
         unless($self->{tail}) {
@@ -83,9 +87,13 @@ package LinkedListNode {
 
     extends 'UNIVERSAL::Object';
 
-    has 'previous' => ( reader => 'get_previous', writer => 'set_previous' );
-    has 'next'     => ( reader => 'get_next',     writer => 'set_next'     );
-    has 'value'    => ( reader => 'get_value',    writer => 'set_value'    );
+    has 'previous';
+    has 'next';
+    has 'value';
+
+    sub previous : reader(get_previous) writer(set_previous);
+    sub next     : reader(get_next)     writer(set_next);
+    sub value    : reader(get_value)    writer(set_value);
 
     sub detach { @{ $_[0] }{ 'previous', 'next' } = (undef) x 2; $_[0] }
 }

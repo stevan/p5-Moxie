@@ -62,7 +62,7 @@ BEGIN {
         extends 'UNIVERSAL::Object';
            with 'Comparable', 'Printable';
 
-        has amount => ( default => sub { 0 } );
+        has amount => sub { 0 };
 
         sub compare ($self, $other) {
             $self->{amount} <=> $other->{amount};

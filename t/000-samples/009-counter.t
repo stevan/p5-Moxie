@@ -20,7 +20,9 @@ package Counter {
         '--' => 'dec'
     );
 
-    has 'count' => ( is => 'ro', default => sub { 0 } );
+    has count => sub { 0 };
+
+    sub count : is(ro);
 
     # NOTE:
     # so apparently the overload

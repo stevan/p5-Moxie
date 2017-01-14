@@ -15,7 +15,9 @@ package BankAccount {
 
     extends 'UNIVERSAL::Object';
 
-    has 'balance' => ( is => 'ro', default => sub { 0 } );
+    has balance => sub { 0 };
+
+    sub balance : is(ro);
 
     sub deposit ($self, $amount) { $self->{balance} += $amount }
 
@@ -31,7 +33,9 @@ package CheckingAccount {
 
     extends 'BankAccount';
 
-    has 'overdraft_account' => ( is => 'ro' );
+    has 'overdraft_account';
+
+    sub overdraft_account : is(ro);
 
     sub withdraw ($self, $amount) {
 
