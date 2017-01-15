@@ -20,7 +20,7 @@ package Counter {
         '--' => 'dec'
     );
 
-    has count => sub { 0 };
+    has '$!count' => sub { 0 };
 
     sub count : is(ro);
 
@@ -31,8 +31,8 @@ package Counter {
     # instance, no idea why though
     # it is mostly just garbage.
     # - SL
-    sub inc ($self, @) { $self->{count}++ }
-    sub dec ($self, @) { $self->{count}-- }
+    sub inc ($self, @) { $self->{'$!count'}++ }
+    sub dec ($self, @) { $self->{'$!count'}-- }
 }
 
 my $c = Counter->new;

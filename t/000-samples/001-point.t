@@ -15,14 +15,14 @@ package Point {
 
     extends 'UNIVERSAL::Object';
 
-    has x => sub { 0 };
-    has y => sub { 0 };
+    has '$!x' => sub { 0 };
+    has '$!y' => sub { 0 };
 
     sub x : is(ro) writer(set_x);
     sub y : is(ro) writer(set_y);
 
     sub clear ($self) {
-        @{ $self }{'x', 'y'} = (0, 0);
+        @{ $self }{'$!x', '$!y'} = (0, 0);
     }
 
     sub pack ($self) {
@@ -37,13 +37,13 @@ package Point3D {
 
     extends 'Point';
 
-    has z => sub { 0 };
+    has '$!z' => sub { 0 };
 
     sub z : is(ro) writer(set_z);
 
     sub pack ($self) {
         my $data = $self->next::method;
-        $data->{z} = $self->{z};
+        $data->{z} = $self->{'$!z'};
         $data;
     }
 }

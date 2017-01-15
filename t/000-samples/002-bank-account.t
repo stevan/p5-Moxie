@@ -15,16 +15,16 @@ package BankAccount {
 
     extends 'UNIVERSAL::Object';
 
-    has balance => sub { 0 };
+    has '$!balance' => sub { 0 };
 
     sub balance : is(ro);
 
-    sub deposit ($self, $amount) { $self->{balance} += $amount }
+    sub deposit ($self, $amount) { $self->{'$!balance'} += $amount }
 
     sub withdraw ($self, $amount) {
-        ($self->{balance} >= $amount)
+        ($self->{'$!balance'} >= $amount)
             || die "Account overdrawn";
-        $self->{balance} -= $amount;
+        $self->{'$!balance'} -= $amount;
     }
 }
 
@@ -33,7 +33,7 @@ package CheckingAccount {
 
     extends 'BankAccount';
 
-    has 'overdraft_account';
+    has '$!overdraft_account';
 
     sub overdraft_account : is(ro);
 
@@ -41,8 +41,8 @@ package CheckingAccount {
 
         my $overdraft_amount = $amount - $self->balance;
 
-        if ( $self->{overdraft_account} && $overdraft_amount > 0 ) {
-            $self->{overdraft_account}->withdraw( $overdraft_amount );
+        if ( $self->{'$!overdraft_account'} && $overdraft_amount > 0 ) {
+            $self->{'$!overdraft_account'}->withdraw( $overdraft_amount );
             $self->deposit( $overdraft_amount );
         }
 
@@ -51,7 +51,7 @@ package CheckingAccount {
 }
 
 subtest '... testing the BankAccount class' => sub {
-    my $savings = BankAccount->new( balance => 250 );
+    my $savings = BankAccount->new( '$!balance' => 250 );
     isa_ok($savings, 'BankAccount' );
 
     is $savings->balance, 250, '... got the savings balance we expected';
@@ -65,7 +65,7 @@ subtest '... testing the BankAccount class' => sub {
     subtest '... testing the CheckingAccount class' => sub {
 
         my $checking = CheckingAccount->new(
-            overdraft_account => $savings,
+            '$!overdraft_account' => $savings,
         );
         isa_ok($checking, 'CheckingAccount');
         isa_ok($checking, 'BankAccount');

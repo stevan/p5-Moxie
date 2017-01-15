@@ -36,14 +36,14 @@ package Cache {
 
     extends 'UNIVERSAL::Object';
 
-    has 'fetcher' => (required => 1);
-    has 'data';
+    has '$!fetcher' => (required => 1);
+    has '$!data';
 
     sub data ($self) : predicate(has_data) clearer(clear) {
-        $self->{data} //= $self->_fetch_data;
+        $self->{'$!data'} //= $self->_fetch_data;
     }
 
-    sub _fetch_data ($self) { $self->{fetcher}->() }
+    sub _fetch_data ($self) { $self->{'$!fetcher'}->() }
 }
 
 my @data = qw[
@@ -52,7 +52,7 @@ my @data = qw[
     three
 ];
 
-my $c = Cache->new( fetcher => sub { shift @data } );
+my $c = Cache->new( '$!fetcher' => sub { shift @data } );
 isa_ok($c, 'Cache');
 
 is($c->data, 'one', '... the data we got is correct');

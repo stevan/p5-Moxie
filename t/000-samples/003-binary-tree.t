@@ -24,18 +24,18 @@ package BinaryTree {
 
     extends 'UNIVERSAL::Object';
 
-    has 'node';
-    has 'parent';
-    has 'left';
-    has 'right';
+    has '$!node';
+    has '$!parent';
+    has '$!left';
+    has '$!right';
 
     sub node   : is(rw);
     sub parent : is(ro) predicate(has_parent);
     sub left   :        predicate(has_left);
     sub right  :        predicate(has_right);
 
-    sub left  ($self) { $self->{left}  //= ref($self)->new( parent => $self ) }
-    sub right ($self) { $self->{right} //= ref($self)->new( parent => $self ) }
+    sub left  ($self) { $self->{'$!left'}  //= ref($self)->new( '$!parent' => $self ) }
+    sub right ($self) { $self->{'$!right'} //= ref($self)->new( '$!parent' => $self ) }
 }
 
 {

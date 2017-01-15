@@ -62,14 +62,14 @@ BEGIN {
         extends 'UNIVERSAL::Object';
            with 'Comparable', 'Printable';
 
-        has amount => sub { 0 };
+        has '$!amount' => sub { 0 };
 
         sub compare ($self, $other) {
-            $self->{amount} <=> $other->{amount};
+            $self->{'$!amount'} <=> $other->{'$!amount'};
         }
 
         sub to_string ($self) {
-            sprintf '$%0.2f USD' => $self->{amount};
+            sprintf '$%0.2f USD' => $self->{'$!amount'};
         }
     }
 
@@ -89,7 +89,7 @@ ok($Eq->requires_method('equal_to'), '... EQ::equal_to is a stub method');
 ok(!$Eq->requires_method('not_equal_to'), '... EQ::not_equal_to is NOT a stub method');
 
 {
-    my $dollar = US::Currency->new( amount => 10 );
+    my $dollar = US::Currency->new( '$!amount' => 10 );
     ok($dollar->isa( 'US::Currency' ), '... the dollar is a US::Currency instance');
     ok($dollar->DOES( 'Eq' ), '... the dollar does the Eq role');
     ok($dollar->DOES( 'Comparable' ), '... the dollar does the Comparable role');
@@ -111,11 +111,11 @@ ok(!$Eq->requires_method('not_equal_to'), '... EQ::not_equal_to is NOT a stub me
     ok($dollar->equal_to( $dollar ), '... we are equal to ourselves');
     ok(!$dollar->not_equal_to( $dollar ), '... we are not not equal to ourselves');
 
-    ok(US::Currency->new( amount => 20 )->greater_than( $dollar ), '... 20 is greater than 10');
-    ok(!US::Currency->new( amount => 2 )->greater_than( $dollar ), '... 2 is not greater than 10');
+    ok(US::Currency->new( '$!amount' => 20 )->greater_than( $dollar ), '... 20 is greater than 10');
+    ok(!US::Currency->new( '$!amount' => 2 )->greater_than( $dollar ), '... 2 is not greater than 10');
 
-    ok(!US::Currency->new( amount => 10 )->greater_than( $dollar ), '... 10 is not greater than 10');
-    ok(US::Currency->new( amount => 10 )->greater_than_or_equal_to( $dollar ), '... 10 is greater than or equal to 10');
+    ok(!US::Currency->new( '$!amount' => 10 )->greater_than( $dollar ), '... 10 is not greater than 10');
+    ok(US::Currency->new( '$!amount' => 10 )->greater_than_or_equal_to( $dollar ), '... 10 is greater than or equal to 10');
 }
 
 {

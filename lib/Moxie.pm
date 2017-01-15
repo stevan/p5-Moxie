@@ -190,7 +190,7 @@ sub import ($class, @args) {
                     map {
                         $_ =~ m/^(.*)\((.*)\)$/;
                         #warn "$1 => $2";
-                        $TRAITS{ $1 }->( $meta, $meta->get_slot( MOP::Method->new( $code )->name ), $2 );
+                        $TRAITS{ $1 }->( $meta, $meta->get_slot( '$!' . MOP::Method->new( $code )->name ), $2 );
                     } @attrs;
                     ();
                 }
@@ -317,9 +317,9 @@ BEGIN {
     $TRAITS{'is'} = sub {
         my ($m, $a, $type) = @_;
         if ( $type eq 'ro' ) {
-            $TRAITS{'reader'}->( $m, $a, $a->name );
+            $TRAITS{'reader'}->( $m, $a, $a->name =~ s/^\$\!//r ); # /
         } elsif ( $type eq 'rw' ) {
-            $TRAITS{'writer'}->( $m, $a, $a->name );
+            $TRAITS{'writer'}->( $m, $a, $a->name =~ s/^\$\!//r ); # /
         } else {
             die "[PANIC] Got strange option ($type) to trait (is)";
         }
