@@ -191,13 +191,13 @@ sub import ($class, @args) {
                             $slot_name = '$!' . $method_name;
                         }
                         elsif ( $trait eq 'predicate' ) {
-                            $slot_name = $arg // ('$!' . ($method_name =~ s/^has\_//r)); #/
+                            $slot_name = $arg || ('$!' . ($method_name =~ s/^has\_//r)); #/
                         }
                         elsif ( $trait eq 'writer' ) {
-                            $slot_name = $arg // ('$!' . ($method_name =~ s/^set\_//r)); #/
+                            $slot_name = $arg || ('$!' . ($method_name =~ s/^set\_//r)); #/
                         }
                         elsif ( $trait eq 'reader' ) {
-                            $slot_name = $arg // ('$!' . ($method_name =~ s/^get\_//r)); #/
+                            $slot_name = $arg || ('$!' . ($method_name =~ s/^get\_//r)); #/
                         }
                         elsif ( $trait eq 'clearer' ) {
                             $slot_name = $arg;
