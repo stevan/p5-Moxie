@@ -40,7 +40,7 @@ package Foo {
 
     extends 'UNIVERSAL::Object';
 
-    has 'bar' => (default => sub { 10 });
+    has 'bar' => sub { 10 };
 
     sub bar ($self) { $self->{bar} }
 }
@@ -50,7 +50,7 @@ package FooBar {
 
     extends 'Foo';
 
-    has 'bar' => (default => sub { 100 });
+    has 'bar' => sub { 100 };
 
     sub derived_bar ($self) { $self->{bar} }
 }

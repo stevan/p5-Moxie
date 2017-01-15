@@ -10,7 +10,7 @@ use MOP;
 package Foo {
     use Moxie;
 
-    has 'bar' => (default => sub { 'bar' });
+    has 'bar' => sub { 'bar' };
 
     sub bar { $_[0]->{bar} }
 }

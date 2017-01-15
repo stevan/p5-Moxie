@@ -10,8 +10,8 @@ package Foo {
 
     extends 'UNIVERSAL::Object';
 
-    has 'foo' => (default => sub{ 'DFOO' } );
-    has 'bar' => (required => 1);
+    has 'foo' => sub { 'DFOO' };
+    has 'bar' => sub { die 'The slot \'bar\' is required' };
 
     sub foo ($self) { $self->{foo} }
     sub bar ($self) { $self->{bar} }

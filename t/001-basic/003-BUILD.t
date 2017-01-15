@@ -10,7 +10,7 @@ package Foo {
 
     extends 'UNIVERSAL::Object';
 
-    has 'collector' => ( default => sub { [] } );
+    has 'collector' => sub { [] };
 
     sub collector { $_[0]->{collector} };
 

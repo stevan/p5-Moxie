@@ -8,14 +8,14 @@ use Test::More;
 package Foo {
     use Moxie;
 
-    has 'bar' => (default => sub { 'bar' });
+    has 'bar' => sub { 'bar' };
     sub bar ($self) { $self->{bar} }
 }
 
 package Bar {
     use Moxie;
 
-    has 'foo' => (default => sub { 'foo' });
+    has 'foo' => sub { 'foo' };
     sub foo ($self) { $self->{foo} }
 }
 

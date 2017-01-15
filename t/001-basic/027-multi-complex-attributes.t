@@ -28,8 +28,8 @@ package Foo {
 
     extends 'UNIVERSAL::Object';
 
-    has 'bar' => ( default => sub { Bar->new } );
-    has 'baz' => ( default => sub { Baz->new } );
+    has 'bar' => sub { Bar->new };
+    has 'baz' => sub { Baz->new };
 
     sub bar ($self) { $self->{bar} }
     sub has_bar ($self)      { defined $self->{bar} }

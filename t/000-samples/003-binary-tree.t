@@ -30,9 +30,11 @@ package BinaryTree {
     has '$!right';
 
     sub node   : is(rw);
-    sub parent : is(ro) predicate(has_parent);
-    sub left   :        predicate(has_left);
-    sub right  :        predicate(has_right);
+    sub parent : is(ro);
+
+    sub has_parent : predicate;
+    sub has_left   : predicate;
+    sub has_right  : predicate;
 
     sub left  ($self) { $self->{'$!left'}  //= ref($self)->new( '$!parent' => $self ) }
     sub right ($self) { $self->{'$!right'} //= ref($self)->new( '$!parent' => $self ) }
@@ -56,12 +58,8 @@ package BinaryTree {
     ok($t->left->has_parent, '... left has a parent');
     is($t->left->parent, $t, '... and it is us');
 
-    #ok($parent_attr->is_data_in_slot_weak_for($t->left), '... the value is weakened');
-
     ok($t->right->has_parent, '... right has a parent');
     is($t->right->parent, $t, '... and it is us');
-
-    #ok($parent_attr->is_data_in_slot_weak_for($t->right), '... the value is weakened');
 }
 
 package MyBinaryTree {

@@ -36,10 +36,13 @@ package Cache {
 
     extends 'UNIVERSAL::Object';
 
-    has '$!fetcher' => (required => 1);
+    has '$!fetcher' => sub { die '$!fetcher is required' };
     has '$!data';
 
-    sub data ($self) : predicate(has_data) clearer(clear) {
+    sub has_data : predicate;
+    sub clear    : clearer('$!data');
+
+    sub data ($self) {
         $self->{'$!data'} //= $self->_fetch_data;
     }
 

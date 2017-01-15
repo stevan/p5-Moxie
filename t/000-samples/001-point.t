@@ -18,8 +18,11 @@ package Point {
     has '$!x' => sub { 0 };
     has '$!y' => sub { 0 };
 
-    sub x : is(ro) writer(set_x);
-    sub y : is(ro) writer(set_y);
+    sub x : is(ro);
+    sub y : is(ro);
+
+    sub set_x : writer($!x);
+    sub set_y : writer($!y);
 
     sub clear ($self) {
         @{ $self }{'$!x', '$!y'} = (0, 0);
@@ -39,7 +42,9 @@ package Point3D {
 
     has '$!z' => sub { 0 };
 
-    sub z : is(ro) writer(set_z);
+    sub z : is(ro);
+
+    sub set_z : writer($!z);
 
     sub pack ($self) {
         my $data = $self->next::method;

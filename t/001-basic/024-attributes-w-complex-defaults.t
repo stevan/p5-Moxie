@@ -16,7 +16,7 @@ package Foo {
 
     extends 'UNIVERSAL::Object';
 
-    has 'bar' => (default => sub { [] });
+    has 'bar' => sub { [] };
 
     sub bar ($self) { $self->{bar} }
 

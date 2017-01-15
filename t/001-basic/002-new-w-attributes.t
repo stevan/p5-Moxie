@@ -29,7 +29,7 @@ package Foo {
 
     extends 'UNIVERSAL::Object';
 
-    has bar => ( default => sub { +{ baz => $::BAZ } } );
+    has bar => sub { +{ baz => $::BAZ } };
 
     sub bar { $_[0]->{bar} }
 }
@@ -52,7 +52,7 @@ package Bar {
 
     extends 'UNIVERSAL::Object';
 
-    has bar => ( default => sub { +{ baz => $::BAZ } } );
+    has bar => sub { +{ baz => $::BAZ } };
 
     sub bar { $_[0]->{bar} }
 }

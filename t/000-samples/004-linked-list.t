@@ -91,9 +91,13 @@ package LinkedListNode {
     has '$!next';
     has '$!value';
 
-    sub previous : reader(get_previous) writer(set_previous);
-    sub next     : reader(get_next)     writer(set_next);
-    sub value    : reader(get_value)    writer(set_value);
+    sub get_previous : reader;
+    sub get_next     : reader;
+    sub get_value    : reader;
+
+    sub set_previous : writer;
+    sub set_next     : writer;
+    sub set_value    : writer;
 
     sub detach { @{ $_[0] }{ '$!previous', '$!next' } = (undef) x 2; $_[0] }
 }

@@ -120,33 +120,9 @@ sub import ($class, @args) {
 
         # import has, extend and with keyword
         BEGIN::Lift::install(
-            ($caller, 'has') => sub ($name, @args) {
-
-                my %traits;
-                if ( scalar(@args) == 1 && ref $args[0] eq 'CODE' ) {
-                    %traits = ( default => $args[0] );
-                }
-                else {
-                    %traits = @args;
-                }
-
-                # this is the only one we handle
-                # specially, everything else gets
-                # called as a trait ...
-                $traits{default} //= delete $traits{required}
-                    ? eval 'package '.$caller.'; sub { die "The slot \'$name\' is required" }'
-                    : eval 'package '.$caller.'; sub { undef }'; # we need this to be a unique CV ... sigh
-
-                $meta->add_slot( $name, delete $traits{default} );
-
-                if ( keys %traits ) {
-                    my $attr = $meta->get_slot( $name );
-                    foreach my $k ( keys %traits ) {
-                        die "[PANIC] Cannot locate trait ($k) to apply to slots ($name)"
-                            unless exists $TRAITS{ $k };
-                        $TRAITS{ $k }->( $meta, $attr, $traits{ $k } );
-                    }
-                }
+            ($caller, 'has') => sub ($name, $initializer = undef) {
+                $initializer ||= eval 'package '.$caller.'; sub { undef }'; # we need this to be a unique CV ... sigh
+                $meta->add_slot( $name, $initializer );
                 return;
             }
         );
@@ -187,11 +163,52 @@ sub import ($class, @args) {
             $meta->alias_method(
                 MODIFY_CODE_ATTRIBUTES => sub {
                     my (undef, $code, @attrs) = @_;
-                    map {
-                        $_ =~ m/^(.*)\((.*)\)$/;
-                        #warn "$1 => $2";
-                        $TRAITS{ $1 }->( $meta, $meta->get_slot( '$!' . MOP::Method->new( $code )->name ), $2 );
-                    } @attrs;
+
+                    my $method_name = MOP::Method->new( $code )->name;
+
+                    foreach my $attr ( @attrs ) {
+                        my ($trait, $arg);
+
+                        if ( $attr =~ m/^([a-z_]*)$/ ) {
+                            $trait = $1;
+                        }
+                        elsif ( $attr =~ m/^([a-z_]*)\((.*)\)$/ ) {
+                            $trait = $1;
+                            $arg   = $2;
+
+                            # clean up $args if needed
+                            $arg = $1 if $arg =~ /^\'(.*)\'$/;
+                        }
+
+                        my $slot_name;
+                        if ( $trait eq 'is' ) {
+                            if ( $arg eq 'ro' ) {
+                                $trait = 'reader';
+                            }
+                            else {
+                                $trait = 'writer';
+                            }
+                            $slot_name = '$!' . $method_name;
+                        }
+                        elsif ( $trait eq 'predicate' ) {
+                            $slot_name = $arg // ('$!' . ($method_name =~ s/^has\_//r)); #/
+                        }
+                        elsif ( $trait eq 'writer' ) {
+                            $slot_name = $arg // ('$!' . ($method_name =~ s/^set\_//r)); #/
+                        }
+                        elsif ( $trait eq 'reader' ) {
+                            $slot_name = $arg // ('$!' . ($method_name =~ s/^get\_//r)); #/
+                        }
+                        elsif ( $trait eq 'clearer' ) {
+                            $slot_name = $arg;
+                        }
+
+                        $TRAITS{ $trait }->(
+                            $meta,
+                            $meta->get_slot( $slot_name ),
+                            $method_name
+                        );
+                    }
                     ();
                 }
             );
@@ -280,10 +297,6 @@ BEGIN {
 
 #### methods to be added is specified now ...
 
-    $TRAITS{'required'} = sub {};
-    $TRAITS{'default'}  = sub {};
-    $TRAITS{'builder'}  = sub {};
-
     $TRAITS{'predicate'} = sub {
         my ($m, $a, $method_name) = @_;
         my $slot = $a->name;
@@ -312,17 +325,6 @@ BEGIN {
             $_[0]->{ $slot } = $_[1] if $_[1];
             $_[0]->{ $slot };
         });
-    };
-
-    $TRAITS{'is'} = sub {
-        my ($m, $a, $type) = @_;
-        if ( $type eq 'ro' ) {
-            $TRAITS{'reader'}->( $m, $a, $a->name =~ s/^\$\!//r ); # /
-        } elsif ( $type eq 'rw' ) {
-            $TRAITS{'writer'}->( $m, $a, $a->name =~ s/^\$\!//r ); # /
-        } else {
-            die "[PANIC] Got strange option ($type) to trait (is)";
-        }
     };
 }
 

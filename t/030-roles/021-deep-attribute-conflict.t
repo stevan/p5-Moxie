@@ -12,7 +12,7 @@ BEGIN {
     package Service {
         use Moxie;
 
-        has 'is_locked' => (default => sub { 0 });
+        has 'is_locked' => sub { 0 };
     }
 
     package WithClass {
