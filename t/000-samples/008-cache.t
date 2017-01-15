@@ -40,7 +40,7 @@ package Cache {
     has '$!data';
 
     sub has_data : predicate;
-    sub clear    : clearer('$!data');
+    sub clear    : clearer($!data);
 
     sub data ($self) {
         $self->{'$!data'} //= $self->_fetch_data;

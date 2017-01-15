@@ -36,7 +36,7 @@ package Foo::Auto {
     sub bar       : is(ro);
     sub set_bar   : writer;
     sub has_bar   : predicate;
-    sub clear_bar : clearer('$!bar');
+    sub clear_bar : clearer($!bar);
 
     sub init_bar ($self) { $self->{'$!bar'} = 200 }
 }
