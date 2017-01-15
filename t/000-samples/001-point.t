@@ -18,8 +18,8 @@ package Point {
     has '$!x' => sub { 0 };
     has '$!y' => sub { 0 };
 
-    sub x : is(ro);
-    sub y : is(ro);
+    sub x : reader($!x);
+    sub y : reader($!y);
 
     sub set_x : writer($!x);
     sub set_y : writer($!y);
@@ -42,8 +42,7 @@ package Point3D {
 
     has '$!z' => sub { 0 };
 
-    sub z : is(ro);
-
+    sub z     : reader($!z);
     sub set_z : writer($!z);
 
     sub pack ($self) {

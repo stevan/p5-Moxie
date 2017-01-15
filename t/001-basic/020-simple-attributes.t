@@ -31,14 +31,14 @@ package Foo::Auto {
 
     extends 'UNIVERSAL::Object';
 
-    has '$!bar';
+    has 'bar';
 
-    sub bar       : is(ro);
+    sub bar       : reader;
     sub set_bar   : writer;
     sub has_bar   : predicate;
-    sub clear_bar : clearer($!bar);
+    sub clear_bar : clearer;
 
-    sub init_bar ($self) { $self->{'$!bar'} = 200 }
+    sub init_bar ($self) { $self->{bar} = 200 }
 }
 
 foreach my $foo ( Foo->new, Foo::Auto->new ) {
@@ -64,7 +64,7 @@ foreach my $foo ( Foo->new, Foo::Auto->new ) {
     is($foo->bar, undef, '... values has been cleared');
 }
 
-foreach my $foo ( Foo->new( bar => 10 ), Foo::Auto->new( '$!bar' => 10 ) ) {
+foreach my $foo ( Foo->new( bar => 10 ), Foo::Auto->new( bar => 10 ) ) {
     ok( $foo->isa( 'UNIVERSAL::Object' ), '... the object is from class UNIVERSAL::Object' );
     ok( $foo->isa( 'Foo' ) || $foo->isa( 'Foo::Auto' ), '... the object is from class Foo or Foo::Auto' );
 

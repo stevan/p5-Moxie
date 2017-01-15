@@ -39,7 +39,7 @@ package Cache {
     has '$!fetcher' => sub { die '$!fetcher is required' };
     has '$!data';
 
-    sub has_data : predicate;
+    sub has_data : predicate($!data);
     sub clear    : clearer($!data);
 
     sub data ($self) {

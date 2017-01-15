@@ -12,16 +12,16 @@ package Foo {
 
     extends 'UNIVERSAL::Object';
 
-    has '$!bar';
+    has 'bar';
 
-    sub bar : is(ro);
+    sub bar : reader;
 
     sub baz ($self, $bar) {
         if (ref($self)) {
-            $self->{'$!bar'} = $bar;
+            $self->{bar} = $bar;
         }
         else {
-            $self = __PACKAGE__->new( '$!bar' => $bar );
+            $self = __PACKAGE__->new( bar => $bar );
         }
 
         return $self->bar;
