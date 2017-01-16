@@ -29,8 +29,8 @@ package BinaryTree {
     has 'left';
     has 'right';
 
-    sub node   : writer;
-    sub parent : reader;
+    sub node   : writer(node);
+    sub parent : reader(parent);
 
     sub has_parent : predicate;
     sub has_left   : predicate;

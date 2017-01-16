@@ -45,7 +45,56 @@ sub GATHER_ALL_SLOTS ($meta) {
     return;
 }
 
-our %TRAITS;
+## method type generators
+
+sub GENERATE_METHOD {
+    my ($meta, $method, $trait, $arg) = @_;
+
+    my $method_name = $method->name;
+
+    if ( $trait eq 'predicate' ) {
+        my $slot_name = $arg || ($method_name =~ s/^has\_//r); #/
+
+        die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
+            unless $meta->has_slot( $slot_name )
+                || $meta->has_slot_alias( $slot_name );
+
+        $meta->add_method( $method_name => sub { defined $_[0]->{ $slot_name } } );
+    }
+    elsif ( $trait eq 'writer' ) {
+        my $slot_name = $arg || ($method_name =~ s/^set\_//r); #/
+
+        die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
+            unless $meta->has_slot( $slot_name )
+                || $meta->has_slot_alias( $slot_name );
+
+        $meta->add_method( $method_name => sub {
+            $_[0]->{ $slot_name } = $_[1] if $_[1];
+            $_[0]->{ $slot_name };
+        });
+    }
+    elsif ( $trait eq 'reader' ) {
+        my $slot_name = $arg || ($method_name =~ s/^get\_//r); #/
+
+        die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
+            unless $meta->has_slot( $slot_name )
+                || $meta->has_slot_alias( $slot_name );
+
+        $meta->add_method( $method_name => sub {
+            die "Cannot assign to `$slot_name`, it is a readonly slot" if scalar @_ != 1;
+            $_[0]->{ $slot_name };
+        });
+    }
+    elsif ( $trait eq 'clearer' ) {
+        my $slot_name = $arg || ($method_name =~ s/^clear\_//r); #/
+
+        die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
+            unless $meta->has_slot( $slot_name )
+                || $meta->has_slot_alias( $slot_name );
+
+        $meta->add_method( $method_name => sub { undef $_[0]->{ $slot_name } } );
+    }
+}
 
 # TODO:
 # Everything that this &import method does should be
@@ -163,12 +212,9 @@ sub import ($class, @args) {
             $meta->alias_method(
                 MODIFY_CODE_ATTRIBUTES => sub {
                     my (undef, $code, @attrs) = @_;
-
-                    my $method_name = MOP::Method->new( $code )->name;
-
+                    my $method = MOP::Method->new( $code );
                     foreach my $attr ( @attrs ) {
                         my ($trait, $arg);
-
                         if ( $attr =~ m/^([a-z_]*)$/ ) {
                             $trait = $1;
                         }
@@ -176,28 +222,9 @@ sub import ($class, @args) {
                             $trait = $1;
                             $arg   = $2;
                         }
-
-                        my $slot_name;
-                        if ( $trait eq 'predicate' ) {
-                            $slot_name = $arg || ($method_name =~ s/^has\_//r); #/
-                        }
-                        elsif ( $trait eq 'writer' ) {
-                            $slot_name = $arg || ($method_name =~ s/^set\_//r); #/
-                        }
-                        elsif ( $trait eq 'reader' ) {
-                            $slot_name = $arg || ($method_name =~ s/^get\_//r); #/
-                        }
-                        elsif ( $trait eq 'clearer' ) {
-                            $slot_name = $arg || ($method_name =~ s/^clear\_//r); #/
-                        }
-
-                        $TRAITS{ $trait }->(
-                            $meta,
-                            $meta->get_slot( $slot_name ),
-                            $method_name
-                        );
+                        GENERATE_METHOD( $meta, $method, $trait, $arg );
                     }
-                    ();
+                    return;
                 }
             );
         };
@@ -228,80 +255,6 @@ sub import ($class, @args) {
 
 }
 
-# TODO: see below ... yeah
-BEGIN {
-
-# NOTES:
-# This is a rough "drawing" of the lifecycle for
-# handling the options for the `has` keyword.
-# Exactly how I will do this, we have to work out
-# because the Moose/Class::MOP subclassing approach
-# got really messy, and just having callback functions
-# for traits means that we lose a lot of metadata.
-# Need to find some way that is:
-# 1) easy to implement new traits into any place in the workflow
-# 2) does not lose the metadata generated
-# 3) is able to mix-in cleanly with other MOP frontends
-# 4) is not mind bendingly complex
-
-#### `has` keyword's option lifecycle
-
-    # is it `required`?
-        # if yes
-            # no need for `default` or `builder` or `lazy`
-                # error if we find one
-            # create required `default`
-
-    # does it have a `default`?
-        # if yes
-            # no need for `builder` or `required`
-                # error if we find one
-
-    # does it have a `builder`?
-        # if yes
-            # no need for `default` or `required`
-                # error if we find one
-            # can we locate the method
-                # is it required/abstract? is it locally defined?
-
-#### initializer is specified now ...
-
-    # should we support `handles`?
-        # if so, what style?
-
-#### methods to be added is specified now ...
-
-    $TRAITS{'predicate'} = sub {
-        my ($m, $a, $method_name) = @_;
-        my $slot = $a->name;
-        $m->add_method( $method_name => sub { defined $_[0]->{ $slot } } );
-    };
-
-    $TRAITS{'clearer'} = sub {
-        my ($m, $a, $method_name) = @_;
-        my $slot = $a->name;
-        $m->add_method( $method_name => sub { undef $_[0]->{ $slot } } );
-    };
-
-    $TRAITS{'reader'} = sub {
-        my ($m, $a, $method_name) = @_;
-        my $slot = $a->name;
-        $m->add_method( $method_name => sub {
-            die "Cannot assign to `$slot`, it is a readonly slot" if scalar @_ != 1;
-            $_[0]->{ $slot };
-        });
-    };
-
-    $TRAITS{'writer'} = sub {
-        my ($m, $a, $method_name) = @_;
-        my $slot = $a->name;
-        $m->add_method( $method_name => sub {
-            $_[0]->{ $slot } = $_[1] if $_[1];
-            $_[0]->{ $slot };
-        });
-    };
-}
-
 1;
 
 __END__
@@ -315,8 +268,11 @@ __END__
 
         extends 'UNIVERSAL::Object';
 
-        has 'x' => (is => 'ro', default => sub { 0 });
-        has 'y' => (is => 'ro', default => sub { 0 });
+        has 'x' => sub { 0 };
+        has 'y' => sub { 0 };
+
+        sub x : reader;
+        sub y : reader;
 
         sub clear ($self) {
             @{$self}{'x', 'y'} = (0, 0);
@@ -328,7 +284,9 @@ __END__
 
         extends 'Point';
 
-        has 'z' => (is => 'ro', default => sub { 0 });
+        has 'z' => sub { 0 };
+
+        sub z : reader;
 
         sub clear ($self) {
             $self->next::method;
