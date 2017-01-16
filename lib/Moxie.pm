@@ -6,6 +6,7 @@ use warnings;
 use experimental qw[
     signatures
     postderef
+    lexical_subs
 ];
 
 our $VERSION   = '0.01';
@@ -32,78 +33,6 @@ sub UNIVERSAL::Object::DOES ($self, $role) {
     # then check the inheritance hierarchy next ...
     return 1 if scalar grep { MOP::Class->new( name => $_ )->does_role( $role ) } $meta->mro->@*;
     return 0;
-}
-
-sub GATHER_ALL_SLOTS ($meta) {
-    foreach my $super ( map { MOP::Role->new( name => $_ ) } $meta->mro->@* ) {
-        foreach my $attr ( $super->slots ) {
-            $meta->alias_slot( $attr->name, $attr->initializer )
-                unless $meta->has_slot( $attr->name )
-                    || $meta->has_slot_alias( $attr->name );
-        }
-    }
-    return;
-}
-
-## method type generators
-
-sub GENERATE_METHOD {
-    my ($meta, $method, $trait, $arg) = @_;
-
-    my $method_name = $method->name;
-
-    # transform here ...
-    if ( $trait eq 'ro' ) {
-        $trait = 'reader';
-        $arg   = $method_name;
-    }
-    elsif ( $trait eq 'rw' ) {
-        $trait = 'writer';
-        $arg   = $method_name;
-    }
-
-    if ( $trait eq 'predicate' ) {
-        my $slot_name = $arg || ($method_name =~ s/^has\_//r); #/
-
-        die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
-            unless $meta->has_slot( $slot_name )
-                || $meta->has_slot_alias( $slot_name );
-
-        $meta->add_method( $method_name => sub { defined $_[0]->{ $slot_name } } );
-    }
-    elsif ( $trait eq 'writer' ) {
-        my $slot_name = $arg || ($method_name =~ s/^set\_//r); #/
-
-        die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
-            unless $meta->has_slot( $slot_name )
-                || $meta->has_slot_alias( $slot_name );
-
-        $meta->add_method( $method_name => sub {
-            $_[0]->{ $slot_name } = $_[1] if $_[1];
-            $_[0]->{ $slot_name };
-        });
-    }
-    elsif ( $trait eq 'reader' ) {
-        my $slot_name = $arg || ($method_name =~ s/^get\_//r); #/
-
-        die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
-            unless $meta->has_slot( $slot_name )
-                || $meta->has_slot_alias( $slot_name );
-
-        $meta->add_method( $method_name => sub {
-            die "Cannot assign to `$slot_name`, it is a readonly slot" if scalar @_ != 1;
-            $_[0]->{ $slot_name };
-        });
-    }
-    elsif ( $trait eq 'clearer' ) {
-        my $slot_name = $arg || ($method_name =~ s/^clear\_//r); #/
-
-        die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
-            unless $meta->has_slot( $slot_name )
-                || $meta->has_slot_alias( $slot_name );
-
-        $meta->add_method( $method_name => sub { undef $_[0]->{ $slot_name } } );
-    }
 }
 
 # TODO:
@@ -262,7 +191,78 @@ sub import ($class, @args) {
 
         };
     }
+}
 
+## Private Util Subs
+
+my sub GATHER_ALL_SLOTS ($meta) {
+    foreach my $super ( map { MOP::Role->new( name => $_ ) } $meta->mro->@* ) {
+        foreach my $attr ( $super->slots ) {
+            $meta->alias_slot( $attr->name, $attr->initializer )
+                unless $meta->has_slot( $attr->name )
+                    || $meta->has_slot_alias( $attr->name );
+        }
+    }
+    return;
+}
+
+my sub GENERATE_METHOD {
+    my ($meta, $method, $trait, $arg) = @_;
+
+    my $method_name = $method->name;
+
+    # transform here ...
+    if ( $trait eq 'ro' ) {
+        $trait = 'reader';
+        $arg   = $method_name;
+    }
+    elsif ( $trait eq 'rw' ) {
+        $trait = 'writer';
+        $arg   = $method_name;
+    }
+
+    if ( $trait eq 'predicate' ) {
+        my $slot_name = $arg || ($method_name =~ s/^has\_//r); #/
+
+        die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
+            unless $meta->has_slot( $slot_name )
+                || $meta->has_slot_alias( $slot_name );
+
+        $meta->add_method( $method_name => sub { defined $_[0]->{ $slot_name } } );
+    }
+    elsif ( $trait eq 'writer' ) {
+        my $slot_name = $arg || ($method_name =~ s/^set\_//r); #/
+
+        die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
+            unless $meta->has_slot( $slot_name )
+                || $meta->has_slot_alias( $slot_name );
+
+        $meta->add_method( $method_name => sub {
+            $_[0]->{ $slot_name } = $_[1] if $_[1];
+            $_[0]->{ $slot_name };
+        });
+    }
+    elsif ( $trait eq 'reader' ) {
+        my $slot_name = $arg || ($method_name =~ s/^get\_//r); #/
+
+        die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
+            unless $meta->has_slot( $slot_name )
+                || $meta->has_slot_alias( $slot_name );
+
+        $meta->add_method( $method_name => sub {
+            die "Cannot assign to `$slot_name`, it is a readonly slot" if scalar @_ != 1;
+            $_[0]->{ $slot_name };
+        });
+    }
+    elsif ( $trait eq 'clearer' ) {
+        my $slot_name = $arg || ($method_name =~ s/^clear\_//r); #/
+
+        die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
+            unless $meta->has_slot( $slot_name )
+                || $meta->has_slot_alias( $slot_name );
+
+        $meta->add_method( $method_name => sub { undef $_[0]->{ $slot_name } } );
+    }
 }
 
 1;
@@ -281,8 +281,8 @@ __END__
         has 'x' => sub { 0 };
         has 'y' => sub { 0 };
 
-        sub x : reader;
-        sub y : reader;
+        sub x : ro;
+        sub y : ro;
 
         sub clear ($self) {
             @{$self}{'x', 'y'} = (0, 0);
@@ -296,7 +296,7 @@ __END__
 
         has 'z' => sub { 0 };
 
-        sub z : reader;
+        sub z : ro;
 
         sub clear ($self) {
             $self->next::method;
