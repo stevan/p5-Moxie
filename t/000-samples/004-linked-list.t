@@ -19,9 +19,9 @@ package LinkedList {
     has 'tail';
     has 'count' => sub { 0 };
 
-    sub head  : reader;
-    sub tail  : reader;
-    sub count : reader;
+    sub head  : ro;
+    sub tail  : ro;
+    sub count : ro;
 
     sub append ($self, $node) {
         unless($self->{'tail'}) {

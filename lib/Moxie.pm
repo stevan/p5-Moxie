@@ -52,6 +52,16 @@ sub GENERATE_METHOD {
 
     my $method_name = $method->name;
 
+    # transform here ...
+    if ( $trait eq 'ro' ) {
+        $trait = 'reader';
+        $arg   = $method_name;
+    }
+    elsif ( $trait eq 'rw' ) {
+        $trait = 'writer';
+        $arg   = $method_name;
+    }
+
     if ( $trait eq 'predicate' ) {
         my $slot_name = $arg || ($method_name =~ s/^has\_//r); #/
 
