@@ -64,12 +64,14 @@ BEGIN {
 
         has '$!amount' => sub { 0 };
 
+        sub amount : reader($!amount);
+
         sub compare ($self, $other) {
-            $self->{'$!amount'} <=> $other->{'$!amount'};
+            $self->amount <=> $other->amount;
         }
 
         sub to_string ($self) {
-            sprintf '$%0.2f USD' => $self->{'$!amount'};
+            sprintf '$%0.2f USD' => $self->amount;
         }
     }
 
