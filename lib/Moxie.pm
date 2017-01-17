@@ -6,7 +6,6 @@ use warnings;
 use experimental qw[
     signatures
     postderef
-    lexical_subs
 ];
 
 our $VERSION   = '0.01';
@@ -207,8 +206,7 @@ sub GATHER_ALL_SLOTS ($meta) {
     return;
 }
 
-sub GENERATE_METHOD {
-    my ($meta, $method, $trait, $arg) = @_;
+sub GENERATE_METHOD ($meta, $method, $trait, $arg) {
 
     my $method_name = $method->name;
 
@@ -264,7 +262,7 @@ sub GENERATE_METHOD {
                         $trait eq 'ro'
                             ? sub {
                                 package DB; @DB::args = (); my () = caller(1);
-                                my ($self)  = @DB::args;
+                                my ($self) = @DB::args;
                                 $self->{ $slot_name };
                             }
                             : sub {
