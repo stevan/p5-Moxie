@@ -39,6 +39,8 @@ package Cache {
     has '$!fetcher' => sub { die '$!fetcher is required' };
     has '$!data';
 
+    my sub fetcher : ro($!fetcher);
+
     sub has_data : predicate($!data);
     sub clear    : clearer($!data);
 
@@ -46,7 +48,7 @@ package Cache {
         $self->{'$!data'} //= $self->_fetch_data;
     }
 
-    sub _fetch_data ($self) { $self->{'$!fetcher'}->() }
+    sub _fetch_data ($self) { fetcher()->() }
 }
 
 my @data = qw[
