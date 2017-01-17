@@ -5,6 +5,7 @@ use warnings;
 
 use Test::More;
 use Data::Dumper;
+use Scalar::Util;
 
 BEGIN {
     use_ok('MOP');
@@ -14,13 +15,13 @@ BEGIN {
 
 TODO:
 
-Make the parent a weak-ref ... it is not right now.
-
 =cut
 
 
 package BinaryTree {
     use Moxie;
+
+    use Scalar::Util ();
 
     extends 'UNIVERSAL::Object';
 
@@ -28,6 +29,8 @@ package BinaryTree {
     has 'parent';
     has 'left';
     has 'right';
+
+    sub BUILD { Scalar::Util::weaken( $_[0]->{parent} ) }
 
     sub node   : rw;
     sub parent : ro;
@@ -58,8 +61,12 @@ package BinaryTree {
     ok($t->left->has_parent, '... left has a parent');
     is($t->left->parent, $t, '... and it is us');
 
+    ok(Scalar::Util::isweak( $t->left->{parent} ), '... the field was weakened correctly');
+
     ok($t->right->has_parent, '... right has a parent');
     is($t->right->parent, $t, '... and it is us');
+
+    ok(Scalar::Util::isweak( $t->right->{parent} ), '... the field was weakened correctly');
 }
 
 package MyBinaryTree {
@@ -83,6 +90,9 @@ package MyBinaryTree {
 
     ok($t->has_left, '... left node has now been created');
     ok($t->has_right, '... right node has now been created');
+
+    ok(Scalar::Util::isweak( $t->left->{parent} ), '... the field was weakened correctly');
+    ok(Scalar::Util::isweak( $t->right->{parent} ), '... the field was weakened correctly');
 }
 
 done_testing;
