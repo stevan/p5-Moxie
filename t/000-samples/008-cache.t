@@ -60,6 +60,9 @@ my @data = qw[
 my $c = Cache->new( '$!fetcher' => sub { shift @data } );
 isa_ok($c, 'Cache');
 
+ok(!Cache->can('fetcher'), '... out private accessor is not available outside');
+ok(!$c->can('fetcher'), '... out private accessor is not available outside');
+
 is($c->data, 'one', '... the data we got is correct');
 ok($c->has_data, '... we have data');
 
