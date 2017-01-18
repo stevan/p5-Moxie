@@ -10,27 +10,6 @@ BEGIN {
     use_ok('MOP');
 }
 
-=pod
-{
-    package Cache;
-    use Moose;
-
-    has fetcher => (is => 'ro', required => 1);
-    has data => (
-        is        => 'rw',
-        lazy      => 1,
-        builder   => '_fetch_data',
-        predicate => 'has_data',
-        clearer   => 'clear'
-    );
-
-    sub _fetch_data {
-        (shift)->fetcher->()
-    }
-}
-=cut
-
-
 package Cache {
     use Moxie;
 
