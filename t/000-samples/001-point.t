@@ -141,6 +141,11 @@ subtest '... meta test' => sub {
         ok(Point->can( $_ ), '... Point can call method ' . $_)
             foreach @MOP_object_methods, @Point_methods;
 
+        {
+            my $m = $Point->get_method( 'set_y' );
+            is_deeply([ $m->get_code_attributes ], ['writer($!y)'], '... we show one CODE attribute');
+        }
+
     };
 
 };

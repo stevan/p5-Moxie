@@ -20,6 +20,10 @@ use PadWalker              (); # for generating lexical accessors
 use MOP;
 use MOP::Internal::Util;
 
+# ...
+
+our %ATTRIBUTE_MAPPING;
+
 # TODO:
 # Everything that this &import method does should be
 # in util subroutines so that someone else can just
@@ -119,6 +123,7 @@ sub import ($class, @args) {
             }
         );
 
+
         # This next step, we want to do
         # immediately after this import
         # method (and the BEGIN block it
@@ -134,6 +139,12 @@ sub import ($class, @args) {
         };
         B::CompilerPhase::Hook::enqueue_BEGIN {
             $meta->alias_method(
+                FETCH_CODE_ATTRIBUTES => sub {
+                    my (undef, $code) = @_;
+                    @{ $ATTRIBUTE_MAPPING{ $code } || [] };
+                }
+            );
+            $meta->alias_method(
                 MODIFY_CODE_ATTRIBUTES => sub {
                     my (undef, $code, @attrs) = @_;
                     my $method = MOP::Method->new( $code );
@@ -147,6 +158,19 @@ sub import ($class, @args) {
                             $arg   = $2;
                         }
                         GENERATE_METHOD( $meta, $method, $trait, $arg );
+                    }
+                    # yuk!
+                    if ( my $generated = $meta->get_method( $method->name ) ) {
+                        $ATTRIBUTE_MAPPING{
+                            $generated->body
+                            # we need to do this ^^ because the
+                            # GENERATE_METHOD function will repace the
+                            # original $code with something new and
+                            # so we need to re-fetch this from the
+                            # class, however this will not help the
+                            # lexical subroutines, but that might be
+                            # fine as they are not easily accessible
+                        } = [ @attrs ];
                     }
                     return;
                 }
