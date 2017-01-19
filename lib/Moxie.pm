@@ -20,21 +20,6 @@ use PadWalker              (); # for generating lexical accessors
 use MOP;
 use MOP::Internal::Util;
 
-# FIXME:
-# This is bad ...
-sub UNIVERSAL::Object::DOES ($self, $role) {
-    my $class = ref $self || $self;
-    # if we inherit from this, we are good ...
-    return 1 if $class->isa( $role );
-    # next check the roles ...
-    my $meta = MOP::Class->new( name => $class );
-    # test just the local (and composed) roles first ...
-    return 1 if $meta->does_role( $role );
-    # then check the inheritance hierarchy next ...
-    return 1 if scalar grep { MOP::Class->new( name => $_ )->does_role( $role ) } $meta->mro->@*;
-    return 0;
-}
-
 # TODO:
 # Everything that this &import method does should be
 # in util subroutines so that someone else can just
