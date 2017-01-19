@@ -14,7 +14,7 @@ use Test::More;
 package Foo {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
     has 'bar' => sub { 100 };
 
@@ -29,7 +29,7 @@ package Foo {
 package Foo::Auto {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
     has bar => sub { 100 };
 

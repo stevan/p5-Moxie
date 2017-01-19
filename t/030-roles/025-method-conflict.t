@@ -50,7 +50,7 @@ package FooBar {
 package FooBarClass {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
        with 'Foo', 'Bar';
 
     sub foo { 'FooBarClass::foo' }
@@ -72,7 +72,7 @@ BEGIN {
         package FooBarBrokenClass1 {
             use Moxie;
 
-            extends 'UNIVERSAL::Object';
+            extends 'Moxie::Object';
                with 'Foo', 'Bar';
         }
     ];
@@ -86,7 +86,7 @@ BEGIN {
 package Baz {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
        with 'Foo';
 
     sub foo { 'Baz::foo' }

@@ -27,7 +27,7 @@ our $BAZ; BEGIN { $BAZ = [] };
 package Foo {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
     has bar => sub { +{ baz => $::BAZ } };
 
@@ -50,7 +50,7 @@ is( $foo->bar->{'baz'}, $BAZ, '... these are the same values' );
 package Bar {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
     has bar => sub { +{ baz => $::BAZ } };
 

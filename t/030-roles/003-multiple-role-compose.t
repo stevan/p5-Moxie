@@ -30,7 +30,7 @@ package Baz {
 package Gorch {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
        with 'Baz';
 }
 

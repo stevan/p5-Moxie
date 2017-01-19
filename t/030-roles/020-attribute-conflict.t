@@ -44,7 +44,7 @@ BEGIN {
         package FooBaz {
             use Moxie;
 
-            extends 'UNIVERSAL::Object';
+            extends 'Moxie::Object';
                with 'Foo';
 
             has 'foo';

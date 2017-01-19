@@ -268,8 +268,7 @@ sub GENERATE_METHOD ($meta, $method, $trait, $arg) {
                             : sub {
                                 package DB; @DB::args = (); my () = caller(1);
                                 my ($self)  = @DB::args;
-                                my ($value) = @_;
-                                $self->{ $slot_name } = $value if defined $value;
+                                $self->{ $slot_name } = $_[0] if scalar @_;
                                 $self->{ $slot_name };
                             };
 
@@ -358,7 +357,7 @@ __END__
     package Point {
         use Moxie;
 
-        extends 'UNIVERSAL::Object';
+        extends 'Moxie::Object';
 
         has 'x' => sub { 0 };
         has 'y' => sub { 0 };

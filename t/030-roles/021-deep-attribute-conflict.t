@@ -37,7 +37,7 @@ BEGIN {
         package ConstructorInjection {
             use Moxie;
 
-            extends 'UNIVERSAL::Object';
+            extends 'Moxie::Object';
                with 'WithClass', 'WithParameters', 'WithDependencies';
         }
     ];

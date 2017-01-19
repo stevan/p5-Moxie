@@ -23,7 +23,7 @@ package BinaryTree {
 
     use Scalar::Util ();
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
     has 'node';
     has 'parent';

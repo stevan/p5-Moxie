@@ -10,7 +10,7 @@ our $x;
 package Foo {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
     sub inc { ++$::x }
     sub dec { --$::x }
@@ -35,7 +35,7 @@ our $y;
 package Bar {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
     sub get_y;
 

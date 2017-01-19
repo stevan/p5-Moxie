@@ -22,7 +22,7 @@ eval q[
     package Bar::Incorrect {
         use Moxie;
 
-        extends 'UNIVERSAL::Object';
+        extends 'Moxie::Object';
            with 'Foo';
 
         has 'bar';

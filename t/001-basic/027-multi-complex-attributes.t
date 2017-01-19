@@ -14,19 +14,19 @@ use Test::More;
 package Bar {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 }
 
 package Baz {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 }
 
 package Foo {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
     has 'bar' => sub { Bar->new };
     has 'baz' => sub { Baz->new };

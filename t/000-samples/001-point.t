@@ -13,7 +13,7 @@ BEGIN {
 package Point {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
     has '$!x' => sub { 0 };
     has '$!y' => sub { 0 };
@@ -59,7 +59,7 @@ subtest '... test an instance of Point' => sub {
 
     is_deeply(
         mro::get_linear_isa('Point'),
-        [ 'Point', 'UNIVERSAL::Object' ],
+        [ 'Point', 'Moxie::Object', 'UNIVERSAL::Object' ],
         '... got the expected linear isa'
     );
 
@@ -83,7 +83,7 @@ subtest '... test an instance of Point3D' => sub {
 
     is_deeply(
         mro::get_linear_isa('Point3D'),
-        [ 'Point3D', 'Point', 'UNIVERSAL::Object' ],
+        [ 'Point3D', 'Point', 'Moxie::Object', 'UNIVERSAL::Object' ],
         '... got the expected linear isa'
     );
 
@@ -125,8 +125,8 @@ subtest '... meta test' => sub {
         isa_ok($Point, 'MOP::Class');
         isa_ok($Point, 'UNIVERSAL::Object');
 
-        is_deeply($Point->mro, [ 'Point', 'UNIVERSAL::Object' ], '... got the expected mro');
-        is_deeply([ $Point->superclasses ], [ 'UNIVERSAL::Object' ], '... got the expected superclasses');
+        is_deeply($Point->mro, [ 'Point', 'Moxie::Object', 'UNIVERSAL::Object' ], '... got the expected mro');
+        is_deeply([ $Point->superclasses ], [ 'Moxie::Object' ], '... got the expected superclasses');
 
         foreach ( @Point_methods ) {
             ok($Point->has_method( $_ ), '... Point has method ' . $_);

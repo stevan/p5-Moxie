@@ -16,7 +16,7 @@ but it should link back to the same class data.
 package Foo {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 }
 
 my $foo = Foo->new;
@@ -37,7 +37,7 @@ is( Scalar::Util::blessed($foo), 'Foo', '... the class of this object is Foo' );
 package Bar {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
     has 'foo';
 
@@ -65,7 +65,7 @@ package Bar {
 package Baz {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
     has 'bar';
 

@@ -14,7 +14,7 @@ BEGIN {
     package Foo;
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
     has foo => sub { 'FOO' };
     has bar => sub { 'BAR' };

@@ -16,13 +16,13 @@ use MOP;
 package Bar {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 }
 
 package Foo {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
     has 'bar' => sub { Bar->new };
 

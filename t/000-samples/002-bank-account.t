@@ -13,7 +13,7 @@ BEGIN {
 package BankAccount {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
     has '$!balance' => sub { 0 };
 
@@ -90,13 +90,13 @@ subtest '... testing some meta-information' => sub {
 
     is_deeply(
         mro::get_linear_isa('BankAccount'),
-        [ 'BankAccount', 'UNIVERSAL::Object' ],
+        [ 'BankAccount', 'Moxie::Object', 'UNIVERSAL::Object' ],
         '... got the expected linear isa'
     );
 
     is_deeply(
         mro::get_linear_isa('CheckingAccount'),
-        [ 'CheckingAccount', 'BankAccount', 'UNIVERSAL::Object' ],
+        [ 'CheckingAccount', 'BankAccount', 'Moxie::Object', 'UNIVERSAL::Object' ],
         '... got the expected linear isa'
     );
 

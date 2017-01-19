@@ -13,70 +13,80 @@ BEGIN {
 package LinkedList {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
-    has 'head';
-    has 'tail';
-    has 'count' => sub { 0 };
+    has '_head';
+    has '_tail';
+    has '_count' => sub { 0 };
 
-    sub head  : ro;
-    sub tail  : ro;
-    sub count : ro;
+    # private r/w accessors
+
+    my sub _head  : rw;
+    my sub _tail  : rw;
+    my sub _count : rw;
+
+    # public read only accessors
+
+    sub head  : reader(_head);
+    sub tail  : reader(_tail);
+    sub count : reader(_count);
+
+    # methods
 
     sub append ($self, $node) {
-        unless($self->{'tail'}) {
-            $self->{'tail'} = $node;
-            $self->{'head'} = $node;
-            $self->{'count'}++;
+        unless(_tail()) {
+            _tail( $node );
+            _head( $node );
+            _count( _count() + 1 );
             return;
         }
-        $self->{'tail'}->set_next($node);
-        $node->set_previous($self->{'tail'});
-        $self->{'tail'} = $node;
-        $self->{'count'}++;
+        _tail()->set_next($node);
+        $node->set_previous(_tail());
+        _tail( $node );
+        _count( _count() + 1 );
     }
 
     sub insert ($self, $index, $node) {
         die "Index ($index) out of bounds"
-            if $index < 0 or $index > $self->{'count'} - 1;
+            if $index < 0 or $index > _count() - 1;
 
-        my $tmp = $self->{'head'};
+        my $tmp = _head();
         $tmp = $tmp->get_next while($index--);
         $node->set_previous($tmp->get_previous);
         $node->set_next($tmp);
         $tmp->get_previous->set_next($node);
         $tmp->set_previous($node);
-        $self->{'count'}++;
+        _count( _count() + 1 );
     }
 
     sub remove ($self, $index) {
         die "Index ($index) out of bounds"
-            if $index < 0 or $index > $self->{'count'} - 1;
+            if $index < 0 or $index > _count() - 1;
 
-        my $tmp = $self->{'head'};
+        my $tmp = _head();
         $tmp = $tmp->get_next while($index--);
         $tmp->get_previous->set_next($tmp->get_next);
         $tmp->get_next->set_previous($tmp->get_previous);
-        $self->{'count'}--;
+        _count( _count() - 1 );
         $tmp->detach();
     }
 
     sub prepend ($self, $node) {
-        unless($self->{'head'}) {
-            $self->{'tail'} = $node;
-            $self->{'head'} = $node;
-            $self->{'count'}++;
+        unless(_head()) {
+            _tail( $node );
+            _head( $node );
+            _count( _count() + 1 );
             return;
         }
-        $self->{'head'}->set_previous($node);
-        $node->set_next($self->{'head'});
-        $self->{'head'} = $node;
-        $self->{'count'}++;
+        _head()->set_previous($node);
+        $node->set_next(_head());
+        _head( $node );
+        _count( _count() + 1 );
     }
 
     sub sum ($self) {
         my $sum = 0;
-        my $tmp = $self->{'head'};
+        my $tmp = _head();
         do { $sum += $tmp->get_value } while($tmp = $tmp->get_next);
         return $sum;
     }
@@ -85,21 +95,37 @@ package LinkedList {
 package LinkedListNode {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
-    has 'previous';
-    has 'next';
+    # private slots
+
+    has '_prev';
+    has '_next';
+
+    # public slot
+
     has 'value';
 
-    sub get_previous : reader;
-    sub get_next     : reader;
+    # private r/w accessors
+
+    my sub _prev : rw;
+    my sub _next : rw;
+
+    # public r/w API
+
+    sub get_previous : reader(_prev);
+    sub get_next     : reader(_next);
     sub get_value    : reader;
 
-    sub set_previous : writer;
-    sub set_next     : writer;
+    sub set_previous : writer(_prev);
+    sub set_next     : writer(_next);
     sub set_value    : writer;
 
-    sub detach { @{ $_[0] }{ 'previous', 'next' } = (undef) x 2; $_[0] }
+    sub detach {
+        _prev( undef );
+        _next( undef );
+        $_[0]
+    }
 }
 
 {

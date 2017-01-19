@@ -41,7 +41,7 @@ BEGIN {
         package C1 {
             use Moxie;
 
-            extends 'UNIVERSAL::Object';
+            extends 'Moxie::Object';
                with 'R1';
         }
     ];
@@ -54,7 +54,7 @@ BEGIN {
         package C2 {
             use Moxie;
 
-            extends 'UNIVERSAL::Object';
+            extends 'Moxie::Object';
                with 'R1', 'R2';
         }
     ];
@@ -71,7 +71,7 @@ BEGIN {
         package C3 {
             use Moxie;
 
-            extends 'UNIVERSAL::Object';
+            extends 'Moxie::Object';
                with 'R1', 'R2', 'R3';
         }
     ];
@@ -88,7 +88,7 @@ BEGIN {
         package C4 {
             use Moxie;
 
-            extends 'UNIVERSAL::Object';
+            extends 'Moxie::Object';
                with 'R1', 'R2', 'R3', 'R4';
         }
     ];
@@ -105,7 +105,7 @@ BEGIN {
         package C5 {
             use Moxie;
 
-            extends 'UNIVERSAL::Object';
+            extends 'Moxie::Object';
                with 'R1', 'R2', 'R3', 'R4', 'R5';
         }
     ];
@@ -128,7 +128,7 @@ BEGIN {
         package C1_required {
             use Moxie;
 
-            extends 'UNIVERSAL::Object';
+            extends 'Moxie::Object';
                with 'R1_required', 'R2';
         }
     ];

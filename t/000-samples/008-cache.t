@@ -13,7 +13,7 @@ BEGIN {
 package Cache {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
     has '$!fetcher' => sub { die '$!fetcher is required' };
     has '$!data';

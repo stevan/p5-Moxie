@@ -13,7 +13,7 @@ BEGIN {
 package Counter {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
     use overload (
         '++' => 'inc',

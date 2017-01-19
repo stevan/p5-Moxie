@@ -25,7 +25,7 @@ package Bat {
 package Quux {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
        with 'Foo', 'Bar';
 }
 
@@ -39,7 +39,7 @@ package Quuux {
 package Xyzzy {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
        with 'Foo', 'Bat';
 }
 

@@ -10,7 +10,7 @@ use Test::More;
 package Foo {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
     has 'bar';
 

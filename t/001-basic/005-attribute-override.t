@@ -38,7 +38,7 @@ I will just punt until we do the real thing.
 package Foo {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
     has 'bar' => sub { 10 };
 

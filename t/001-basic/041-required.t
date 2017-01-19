@@ -8,7 +8,7 @@ use Test::More;
 package Foo {
     use Moxie;
 
-    extends 'UNIVERSAL::Object';
+    extends 'Moxie::Object';
 
     has 'foo' => sub { 'DFOO' };
     has 'bar' => sub { die 'The slot \'bar\' is required' };
