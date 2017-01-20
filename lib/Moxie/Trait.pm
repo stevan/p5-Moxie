@@ -8,6 +8,9 @@ use experimental qw[
     postderef
 ];
 
+use B::CompilerPhase::Hook (); # multi-phase programming
+use PadWalker              (); # for generating lexical accessors
+
 our $VERSION   = '0.01';
 our $AUTHORITY = 'cpan:STEVAN';
 

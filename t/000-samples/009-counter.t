@@ -17,7 +17,7 @@ package Counter {
 
     use overload (
         '++' => 'inc',
-        '--' => 'dec'
+        '--' => 'dec',
     );
 
     has '$!count' => sub { 0 };

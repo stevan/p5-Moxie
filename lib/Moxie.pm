@@ -15,7 +15,6 @@ use experimental           (); # need this later when we load features
 use Module::Runtime        (); # load things so they DWIM
 use BEGIN::Lift            (); # fake some keywords
 use B::CompilerPhase::Hook (); # multi-phase programming
-use PadWalker              (); # for generating lexical accessors
 
 use MOP;
 use MOP::Internal::Util;
