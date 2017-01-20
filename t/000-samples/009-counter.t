@@ -22,7 +22,7 @@ package Counter {
 
     has '$!count' => sub { 0 };
 
-    sub count : reader($!count);
+    sub count : ro($!count);
 
     # NOTE:
     # so apparently the overload

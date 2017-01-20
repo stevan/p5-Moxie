@@ -64,7 +64,7 @@ BEGIN {
 
         has '$!amount' => sub { 0 };
 
-        sub amount : reader($!amount);
+        sub amount : ro($!amount);
 
         sub compare ($self, $other) {
             $self->amount <=> $other->amount;

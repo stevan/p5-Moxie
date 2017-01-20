@@ -18,11 +18,11 @@ package Point {
     has '$!x' => sub { 0 };
     has '$!y' => sub { 0 };
 
-    sub x : reader($!x);
-    sub y : reader($!y);
+    sub x : ro($!x);
+    sub y : ro($!y);
 
-    sub set_x : writer($!x);
-    sub set_y : writer($!y);
+    sub set_x : wo($!x);
+    sub set_y : wo($!y);
 
     sub clear ($self) {
         @{ $self }{'$!x', '$!y'} = (0, 0);
@@ -42,8 +42,8 @@ package Point3D {
 
     has '$!z' => sub { 0 };
 
-    sub z     : reader($!z);
-    sub set_z : writer($!z);
+    sub z     : ro($!z);
+    sub set_z : wo($!z);
 
     sub pack ($self) {
         my $data = $self->next::method;
@@ -143,7 +143,12 @@ subtest '... meta test' => sub {
 
         {
             my $m = $Point->get_method( 'set_y' );
-            is_deeply([ $m->get_code_attributes ], ['writer($!y)'], '... we show one CODE attribute');
+            is_deeply([ $m->get_code_attributes ], [['wo', ['$!y'], 'wo($!y)']], '... we show one CODE attribute');
+        }
+
+        {
+            my $m = $Point->get_method( 'y' );
+            is_deeply([ $m->get_code_attributes ], [['ro', ['$!y'], 'ro($!y)']], '... we show one CODE attribute');
         }
 
     };

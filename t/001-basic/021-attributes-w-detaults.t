@@ -33,8 +33,8 @@ package Foo::Auto {
 
     has bar => sub { 100 };
 
-    sub bar       : reader;
-    sub set_bar   : writer;
+    sub bar       : ro;
+    sub set_bar   : wo;
     sub has_bar   : predicate;
     sub clear_bar : clearer;
 

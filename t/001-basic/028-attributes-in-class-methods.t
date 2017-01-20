@@ -14,7 +14,7 @@ package Foo {
 
     has 'bar';
 
-    sub bar : reader;
+    sub bar : ro;
 
     sub baz ($self, $bar) {
         if (ref($self)) {

@@ -21,15 +21,15 @@ package LinkedList {
 
     # private r/w accessors
 
-    my sub _head  : rw;
-    my sub _tail  : rw;
-    my sub _count : rw;
+    my sub _head  : private;
+    my sub _tail  : private;
+    my sub _count : private;
 
     # public read only accessors
 
-    sub head  : reader(_head);
-    sub tail  : reader(_tail);
-    sub count : reader(_count);
+    sub head  : ro(_head);
+    sub tail  : ro(_tail);
+    sub count : ro(_count);
 
     # methods
 
@@ -108,18 +108,18 @@ package LinkedListNode {
 
     # private r/w accessors
 
-    my sub _prev : rw;
-    my sub _next : rw;
+    my sub _prev : private;
+    my sub _next : private;
 
     # public r/w API
 
-    sub get_previous : reader(_prev);
-    sub get_next     : reader(_next);
-    sub get_value    : reader;
+    sub get_previous : ro(_prev);
+    sub get_next     : ro(_next);
+    sub get_value    : ro;
 
-    sub set_previous : writer(_prev);
-    sub set_next     : writer(_next);
-    sub set_value    : writer;
+    sub set_previous : wo(_prev);
+    sub set_next     : wo(_next);
+    sub set_value    : wo;
 
     sub detach {
         _prev( undef );

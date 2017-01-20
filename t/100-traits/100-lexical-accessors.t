@@ -19,8 +19,8 @@ BEGIN {
     has foo => sub { 'FOO' };
     has bar => sub { 'BAR' };
 
-    my sub foo : ro;
-    my sub bar : rw;
+    my sub foo : private;
+    my sub bar : private;
 
     sub change_bar {
         my ($self, $value) = @_;

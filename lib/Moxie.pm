@@ -20,14 +20,10 @@ use PadWalker              (); # for generating lexical accessors
 use MOP;
 use MOP::Internal::Util;
 
-# ...
+use Moxie::Object;
 
-# we need this variable down
-# in the import method, and
-# in some progammed BEGIN blocks
-# so we need to declare it early
-# and in the uppermost scope
-our %ATTRIBUTE_MAPPING;
+use Moxie::Trait;
+use Moxie::Trait::Util;
 
 # TODO:
 # Everything that this &import method does should be
@@ -128,58 +124,8 @@ sub import ($class, @args) {
             }
         );
 
-        # This next step, we want to do
-        # immediately after this import
-        # method (and the BEGIN block it
-        # is contained within) finishes
-
-        # since these are BEGIN blocks,
-        # they need to be enqueued in
-        # the reverse order they will
-        # run in order to have the method
-        # not trip up role composiiton
-        B::CompilerPhase::Hook::enqueue_BEGIN {
-            $meta->delete_method_alias('MODIFY_CODE_ATTRIBUTES')
-        };
-        B::CompilerPhase::Hook::enqueue_BEGIN {
-            $meta->alias_method(
-                FETCH_CODE_ATTRIBUTES => sub {
-                    my (undef, $code) = @_;
-                    @{ $ATTRIBUTE_MAPPING{ $code } || [] };
-                }
-            );
-            $meta->alias_method(
-                MODIFY_CODE_ATTRIBUTES => sub {
-                    my (undef, $code, @attrs) = @_;
-                    my $method = MOP::Method->new( $code );
-                    foreach my $attr ( @attrs ) {
-                        my ($trait, $arg);
-                        if ( $attr =~ m/^([a-z_]*)$/ ) {
-                            $trait = $1;
-                        }
-                        elsif ( $attr =~ m/^([a-z_]*)\((.*)\)$/ ) {
-                            $trait = $1;
-                            $arg   = $2;
-                        }
-                        GENERATE_METHOD( $meta, $method, $trait, $arg );
-                    }
-                    # yuk!
-                    if ( my $generated = $meta->get_method( $method->name ) ) {
-                        $ATTRIBUTE_MAPPING{
-                            $generated->body
-                            # we need to do this ^^ because the
-                            # GENERATE_METHOD function will repace the
-                            # original $code with something new and
-                            # so we need to re-fetch this from the
-                            # class, however this will not help the
-                            # lexical subroutines, but that might be
-                            # fine as they are not easily accessible
-                        } = [ @attrs ];
-                    }
-                    return;
-                }
-            );
-        };
+        # schedule the trait collection ...
+        Moxie::Trait::Util::SCHEDULE_TRAIT_COLLECTION( $meta );
 
         # install our class finalizers in the
         # reverse order so that the first one
@@ -217,146 +163,6 @@ sub GATHER_ALL_SLOTS ($meta) {
         }
     }
     return;
-}
-
-sub GENERATE_METHOD ($meta, $method, $trait, $arg) {
-
-    my $method_name = $method->name;
-
-    # a method will know it's origin stash, but ...
-    my $c = MOP::Class->new( $method->origin_stash );
-
-    # we will not be able to find it in the symbol table ...
-    unless ( $c->has_method( $method_name ) || $c->has_method_alias( $method_name ) || $c->requires_method( $method_name ) ) {
-
-        #warn $c->has_method( $method_name ) ? 'has method' : 'no method';
-        #warn $c->has_method_alias( $method_name ) ? 'has method alias' : 'no method alias';
-        #warn $c->requires_method( $method_name ) ? 'requires method' : 'no required method';
-        #warn $c->name."::$method_name trying to generate $trait ($arg)";
-
-        # for the time being lets only support
-        # ro and rw here, this will likely change ...
-        return unless $trait eq 'ro' || $trait eq 'rw';
-
-        # at this point we can assume that we have a lexical
-        # method which we need to transform, and in order to
-        # do that we need to look at all the methods in this
-        # class and find all the ones who 'close over' the
-        # lexical method and then re-write their lexical pad
-        # to use the accessor method that I will generate.
-
-        # NOTE:
-        # we need to delay this until the UNITCHECK phase
-        # because we need all the methods of this class to
-        # have been compiled, at this moment, they are not.
-        B::CompilerPhase::Hook::enqueue_UNITCHECK {
-            my $slot_name = $arg || $method_name;
-            # now check the class local methods ....
-            foreach my $m ( $c->methods ) {
-                # get a HASH of the things the method closes over
-                my $closed_over = PadWalker::closed_over( $m->body );
-
-                #warn Data::Dumper::Dumper({
-                #    class       => $c->name,
-                #    method      => $m->name,
-                #    closed_over => $closed_over,
-                #    trait       => $trait,
-                #    looking_for => $method_name,
-                #});
-
-                # if the private method is used, then it will be
-                # here with a prepended `&` sigil ...
-                if ( exists $closed_over->{ '&' . $method_name } ) {
-                    # now we know that we have someone using the
-                    # lexical method inside the method body, so
-                    # we need to generate our accessor accordingly
-                    # then this is as simple as assigning the HASH key
-                    $closed_over->{ '&' . $method_name } =
-                        $trait eq 'ro'
-                            ? sub {
-                                package DB; @DB::args = (); my () = caller(1);
-                                my ($self) = @DB::args;
-                                $self->{ $slot_name };
-                            }
-                            : sub {
-                                package DB; @DB::args = (); my () = caller(1);
-                                my ($self)  = @DB::args;
-                                $self->{ $slot_name } = $_[0] if scalar @_;
-                                $self->{ $slot_name };
-                            };
-
-                    # okay, now restore the closed over vars
-                    # with our new addition...
-                    PadWalker::set_closed_over( $m->body, $closed_over );
-                }
-            }
-        };
-    }
-    # TODO:
-    # in this `else` block we are assuming it is not a
-    # lexical method, so going about doing the usual
-    # stash operations, etc. However, our lexical
-    # determination is weak and can be confused easily
-    # so we will want to actually do the method lookup
-    # that failed in order to get us to this `else` and
-    # then take the method we find and compare that
-    # to the $code here. This will detect the case of
-    # a lexical method and non-lexical method conflicting.
-    # - SL
-    else {
-        # transform here ...
-        if ( $trait eq 'ro' ) {
-            $trait = 'reader';
-            $arg   = $method_name;
-        }
-        elsif ( $trait eq 'rw' ) {
-            $trait = 'writer';
-            $arg   = $method_name;
-        }
-
-        if ( $trait eq 'predicate' ) {
-            my $slot_name = $arg || ($method_name =~ s/^has\_//r); #/
-
-            die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
-                unless $meta->has_slot( $slot_name )
-                    || $meta->has_slot_alias( $slot_name );
-
-            $meta->add_method( $method_name => sub { defined $_[0]->{ $slot_name } } );
-        }
-        elsif ( $trait eq 'writer' ) {
-            my $slot_name = $arg || ($method_name =~ s/^set\_//r); #/
-
-            die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
-                unless $meta->has_slot( $slot_name )
-                    || $meta->has_slot_alias( $slot_name );
-
-            $meta->add_method( $method_name => sub {
-                $_[0]->{ $slot_name } = $_[1] if $_[1];
-                $_[0]->{ $slot_name };
-            });
-        }
-        elsif ( $trait eq 'reader' ) {
-            my $slot_name = $arg || ($method_name =~ s/^get\_//r); #/
-
-            die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
-                unless $meta->has_slot( $slot_name )
-                    || $meta->has_slot_alias( $slot_name );
-
-            $meta->add_method( $method_name => sub {
-                die "Cannot assign to `$slot_name`, it is a readonly slot" if scalar @_ != 1;
-                $_[0]->{ $slot_name };
-            });
-        }
-        elsif ( $trait eq 'clearer' ) {
-            my $slot_name = $arg || ($method_name =~ s/^clear\_//r); #/
-
-            die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
-                unless $meta->has_slot( $slot_name )
-                    || $meta->has_slot_alias( $slot_name );
-
-            $meta->add_method( $method_name => sub { undef $_[0]->{ $slot_name } } );
-        }
-    }
 }
 
 1;
