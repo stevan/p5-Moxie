@@ -81,7 +81,16 @@ sub SCHEDULE_TRAIT_COLLECTION ( $meta ) {
                 # Now loop through the traits and look to
                 # see if we have any ones we cannot handle
                 # and collect them for later ...
-                my @bad = grep not(Moxie::Trait->can( $_->[0] )), @traits;
+                my @bad = grep {
+                    my $stop;
+                    foreach my $provider ( @TRAIT_PROVIDERS ) {
+                        if ( $provider->can( $_->[0] ) ) {
+                            $stop++;
+                            last;
+                        }
+                    }
+                    not( $stop );
+                } @traits;
 
                 #use Data::Dumper;
                 #warn Dumper \@bad;
