@@ -22,6 +22,11 @@ use MOP::Internal::Util;
 
 # ...
 
+# we need this variable down
+# in the import method, and
+# in some progammed BEGIN blocks
+# so we need to declare it early
+# and in the uppermost scope
 our %ATTRIBUTE_MAPPING;
 
 # TODO:
@@ -122,7 +127,6 @@ sub import ($class, @args) {
                 return;
             }
         );
-
 
         # This next step, we want to do
         # immediately after this import
