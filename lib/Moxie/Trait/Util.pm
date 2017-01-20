@@ -9,10 +9,16 @@ use experimental qw[
     postderef
 ];
 
+use B::CompilerPhase::Hook (); # multi-phase programming
+
+use Moxie::Trait;
+
 our $VERSION   = '0.01';
 our $AUTHORITY = 'cpan:STEVAN';
 
 ## ...
+
+our @TRAIT_PROVIDERS = ('Moxie::Trait');
 
 our %__CODE_ATTRIBUTE_STORAGE__;
 
@@ -92,7 +98,12 @@ sub SCHEDULE_TRAIT_COLLECTION ( $meta ) {
                 my $method_name = $method->name;
                 foreach my $trait ( @traits ) {
                     my ($t, $args) = @$trait;
-                    Moxie::Trait->can( $t )->( $meta, $method_name, @$args );
+                    foreach my $provider ( @TRAIT_PROVIDERS ) {
+                        if ( my $m = $provider->can( $t ) ) {
+                            $m->( $meta, $method_name, @$args );
+                            last;
+                        }
+                    }
                 }
 
                 # next we need to fetch the latest version
