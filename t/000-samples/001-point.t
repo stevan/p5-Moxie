@@ -143,12 +143,12 @@ subtest '... meta test' => sub {
 
         {
             my $m = $Point->get_method( 'set_y' );
-            is_deeply([ $m->get_code_attributes ], [['wo', ['$!y'], 'wo($!y)']], '... we show one CODE attribute');
+            is_deeply([ $m->get_code_attributes ], ['wo($!y)'], '... we show one CODE attribute');
         }
 
         {
             my $m = $Point->get_method( 'y' );
-            is_deeply([ $m->get_code_attributes ], [['ro', ['$!y'], 'ro($!y)']], '... we show one CODE attribute');
+            is_deeply([ $m->get_code_attributes ], ['ro($!y)'], '... we show one CODE attribute');
         }
 
     };

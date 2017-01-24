@@ -15,14 +15,13 @@ use experimental           (); # need this later when we load features
 use Module::Runtime        (); # load things so they DWIM
 use BEGIN::Lift            (); # fake some keywords
 use B::CompilerPhase::Hook (); # multi-phase programming
+use CODE::Annotation       (); # how the trait system works
 
 use MOP;
 use MOP::Internal::Util;
 
 use Moxie::Object;
-
 use Moxie::Trait;
-use Moxie::Trait::Util;
 
 # TODO:
 # Everything that this &import method does should be
@@ -124,7 +123,7 @@ sub import ($class, @args) {
         );
 
         # schedule the trait collection ...
-        Moxie::Trait::Util::SCHEDULE_TRAIT_COLLECTION( $meta );
+        CODE::Annotation::setup_package( $meta, 'Moxie::Trait' );
 
         # install our class finalizers in the
         # reverse order so that the first one
