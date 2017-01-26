@@ -14,7 +14,9 @@ use PadWalker              (); # for generating lexical accessors
 our $VERSION   = '0.01';
 our $AUTHORITY = 'cpan:STEVAN';
 
-sub ro ( $meta, $method_name, @args ) {
+use CODE::Annotation 'Provider';
+
+sub ro ( $meta, $method_name, @args ) : Destructive {
 
     my $slot_name;
     if ( $args[0] ) {
@@ -39,7 +41,7 @@ sub ro ( $meta, $method_name, @args ) {
     });
 }
 
-sub rw ( $meta, $method_name, @args ) {
+sub rw ( $meta, $method_name, @args ) : Destructive {
 
     my $slot_name;
     if ( $args[0] ) {
@@ -59,7 +61,7 @@ sub rw ( $meta, $method_name, @args ) {
     });
 }
 
-sub wo ( $meta, $method_name, @args ) {
+sub wo ( $meta, $method_name, @args ) : Destructive {
 
     my $slot_name;
     if ( $args[0] ) {
@@ -84,7 +86,7 @@ sub wo ( $meta, $method_name, @args ) {
     });
 }
 
-sub predicate ( $meta, $method_name, @args ) {
+sub predicate ( $meta, $method_name, @args ) : Destructive {
 
     my $slot_name;
     if ( $args[0] ) {
@@ -106,7 +108,7 @@ sub predicate ( $meta, $method_name, @args ) {
     $meta->add_method( $method_name => sub { defined $_[0]->{ $slot_name } } );
 }
 
-sub clearer ( $meta, $method_name, @args ) {
+sub clearer ( $meta, $method_name, @args ) : Destructive {
 
     my $slot_name;
     if ( $args[0] ) {

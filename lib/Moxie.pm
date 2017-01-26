@@ -41,7 +41,7 @@ use Moxie::Trait;
 # and re-use.
 # - SL
 
-sub import ($class, @args) {
+sub import ($class, %opts) {
 
     # get the caller ...
     my $caller = caller;
@@ -122,8 +122,13 @@ sub import ($class, @args) {
             }
         );
 
-        # schedule the trait collection ...
-        CODE::Annotation::setup_package( $meta, 'Moxie::Trait' );
+        # setup the base traits, and
+        my @traits = ('Moxie::Trait');
+        # and anything we were asked to load ...
+        push @traits => $opts{'traits'}->@* if exists $opts{'traits'};
+
+        # then schedule the trait collection ...
+        CODE::Annotation::import_into( $meta, @traits );
 
         # install our class finalizers in the
         # reverse order so that the first one
