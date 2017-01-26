@@ -20,7 +20,7 @@ BEGIN {
     sub Bar { $ANNOTATION_USED++; return }
 
     package Foo;
-    use Moxie traits => [
+    use Moxie annotations => [
         'Bar::Annotation::Provider'
     ];
 

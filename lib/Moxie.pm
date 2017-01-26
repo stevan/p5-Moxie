@@ -15,13 +15,13 @@ use experimental           (); # need this later when we load features
 use Module::Runtime        (); # load things so they DWIM
 use BEGIN::Lift            (); # fake some keywords
 use B::CompilerPhase::Hook (); # multi-phase programming
-use CODE::Annotation       (); # how the trait system works
+use CODE::Annotation       (); # for accessor generators
 
 use MOP;
 use MOP::Internal::Util;
 
 use Moxie::Object;
-use Moxie::Trait;
+use Moxie::Annotation::Provider;
 
 # TODO:
 # Everything that this &import method does should be
@@ -122,13 +122,13 @@ sub import ($class, %opts) {
             }
         );
 
-        # setup the base traits, and
-        my @traits = ('Moxie::Trait');
+        # setup the base annotations, and
+        my @annotations = ('Moxie::Annotation::Provider');
         # and anything we were asked to load ...
-        push @traits => $opts{'traits'}->@* if exists $opts{'traits'};
+        push @annotations => $opts{'annotations'}->@* if exists $opts{'annotations'};
 
-        # then schedule the trait collection ...
-        CODE::Annotation::import_into( $meta, @traits );
+        # then schedule the annotation collection ...
+        CODE::Annotation::import_into( $meta, @annotations );
 
         # install our class finalizers in the
         # reverse order so that the first one
@@ -138,8 +138,15 @@ sub import ($class, %opts) {
         B::CompilerPhase::Hook::append_UNITCHECK {
 
             # pre-populate the cache for all the slots
-            GATHER_ALL_SLOTS( $meta )
-                if $meta->isa('MOP::Class');
+            if ( $meta->isa('MOP::Class') ) {
+                foreach my $super ( map { MOP::Role->new( name => $_ ) } $meta->mro->@* ) {
+                    foreach my $attr ( $super->slots ) {
+                        $meta->alias_slot( $attr->name, $attr->initializer )
+                            unless $meta->has_slot( $attr->name )
+                                || $meta->has_slot_alias( $attr->name );
+                    }
+                }
+            }
 
             # apply roles ...
             if ( my @does = $meta->roles ) {
@@ -153,19 +160,6 @@ sub import ($class, %opts) {
 
         };
     }
-}
-
-## Private Util Subs
-
-sub GATHER_ALL_SLOTS ($meta) {
-    foreach my $super ( map { MOP::Role->new( name => $_ ) } $meta->mro->@* ) {
-        foreach my $attr ( $super->slots ) {
-            $meta->alias_slot( $attr->name, $attr->initializer )
-                unless $meta->has_slot( $attr->name )
-                    || $meta->has_slot_alias( $attr->name );
-        }
-    }
-    return;
 }
 
 1;

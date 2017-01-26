@@ -1,5 +1,5 @@
-package Moxie::Trait;
-# ABSTRACT: Traits system
+package Moxie::Annotation::Provider;
+# ABSTRACT: built in annotations system
 
 use v5.22;
 use warnings;
@@ -8,13 +8,13 @@ use experimental qw[
     postderef
 ];
 
+use CODE::Annotation 'Provider';
+
 use B::CompilerPhase::Hook (); # multi-phase programming
 use PadWalker              (); # for generating lexical accessors
 
 our $VERSION   = '0.01';
 our $AUTHORITY = 'cpan:STEVAN';
-
-use CODE::Annotation 'Provider';
 
 sub ro ( $meta, $method_name, @args ) : Destructive {
 
@@ -174,7 +174,6 @@ sub private ( $meta, $method_name, @args ) {
                 #    class       => $meta->name,
                 #    method      => $m->name,
                 #    closed_over => $closed_over,
-                #    trait       => $trait,
                 #    looking_for => $method_name,
                 #});
 
@@ -209,7 +208,5 @@ __END__
 =pod
 
 =head1 DESCRIPTION
-
-This is where the traits are stored.
 
 =cut
