@@ -1,5 +1,5 @@
 package Moxie::Annotation::Provider;
-# ABSTRACT: built in annotations system
+# ABSTRACT: built in annotations
 
 use v5.22;
 use warnings;
