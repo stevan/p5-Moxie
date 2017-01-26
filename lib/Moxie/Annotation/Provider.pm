@@ -8,7 +8,7 @@ use experimental qw[
     postderef
 ];
 
-use CODE::Annotation 'Provider';
+use Method::Annotation 'Provider';
 
 use B::CompilerPhase::Hook (); # multi-phase programming
 use PadWalker              (); # for generating lexical accessors

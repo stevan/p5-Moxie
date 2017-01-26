@@ -15,7 +15,7 @@ use experimental           (); # need this later when we load features
 use Module::Runtime        (); # load things so they DWIM
 use BEGIN::Lift            (); # fake some keywords
 use B::CompilerPhase::Hook (); # multi-phase programming
-use CODE::Annotation       (); # for accessor generators
+use Method::Annotation     (); # for accessor generators
 
 use MOP;
 use MOP::Internal::Util;
@@ -128,7 +128,7 @@ sub import ($class, %opts) {
         push @annotations => $opts{'annotations'}->@* if exists $opts{'annotations'};
 
         # then schedule the annotation collection ...
-        CODE::Annotation::import_into( $meta, @annotations );
+        Method::Annotation::import_into( $meta, @annotations );
 
         # install our class finalizers in the
         # reverse order so that the first one
