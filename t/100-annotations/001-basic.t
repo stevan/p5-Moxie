@@ -10,6 +10,13 @@ BEGIN {
     use_ok('MOP');
 }
 
+=pod
+
+This just shows that we can apply our
+annotations and add others in if we want
+
+=cut
+
 {
     package Bar::Annotation::Provider;
     use strict;
@@ -20,9 +27,8 @@ BEGIN {
     sub Bar { $ANNOTATION_USED++; return }
 
     package Foo;
-    use Moxie annotations => [
-        'Bar::Annotation::Provider'
-    ];
+    use Moxie
+        annotations => ['Bar::Annotation::Provider'];
 
     extends 'Moxie::Object';
 
