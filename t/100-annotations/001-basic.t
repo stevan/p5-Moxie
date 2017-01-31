@@ -18,17 +18,17 @@ traits and add others in if we want
 =cut
 
 {
-    package Bar::Annotation::Provider;
+    package Bar::Traits::Provider;
     use strict;
     use warnings;
 
-    our $ANNOTATION_USED = 0;
+    our $TRAIT_USED = 0;
 
-    sub Bar { $ANNOTATION_USED++; return }
+    sub Bar { $TRAIT_USED++; return }
 
     package Foo;
     use Moxie
-        traits => ['Bar::Annotation::Provider'];
+        traits => ['Bar::Traits::Provider'];
 
     extends 'Moxie::Object';
 
@@ -38,7 +38,7 @@ traits and add others in if we want
 }
 
 BEGIN {
-    is($Bar::Annotation::Provider::ANNOTATION_USED, 1, '...the annotation was used in BEGIN');
+    is($Bar::Traits::Provider::TRAIT_USED, 1, '...the trait was used in BEGIN');
 }
 
 {
