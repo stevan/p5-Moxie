@@ -23,24 +23,6 @@ use MOP::Internal::Util;
 use Moxie::Object;
 use Moxie::Traits::Provider;
 
-# TODO:
-# Everything that this &import method does should be
-# in util subroutines so that someone else can just
-# come in and use it sensibly to implement their own
-# object system if they want. The idea is that the
-# simple, bare bones sugar I provide here is just barely
-# one step above the raw version which uses the package
-# variables and MOP::Internal::Util::* methods directly
-# inside BEGIN blocks, etc.
-#
-# In short, there is no need to make people jump through
-# stupid meta-layer subclass stuff in order to maintain
-# a level or purity that perl just doesn't give a fuck
-# about anyway. In the 'age of objects' we have forgotten
-# that subroutines are also an excellent form of encapsulation
-# and re-use.
-# - SL
-
 sub import ($class, %opts) {
 
     # get the caller ...
@@ -51,17 +33,6 @@ sub import ($class, %opts) {
     # likely being loaded in a class, so
     # turn on all the features
     if ( $caller ne 'main' ) {
-
-        # FIXME:
-        # There are a lot of assumptions here that
-        # we are not loading MOP.pm in a package
-        # where it might have already been loaded
-        # so we might want to keep that in mind
-        # and guard against some of that below,
-        # in particular I think the FINALIZE handlers
-        # might need to be checked, and perhaps the
-        # 'has' keyword importation as well.
-        # - SL
 
         # NOTE:
         # create the meta-object, we start
@@ -130,11 +101,7 @@ sub import ($class, %opts) {
         # then schedule the trait collection ...
         Method::Traits::import_into( $meta, @traits );
 
-        # install our class finalizers in the
-        # reverse order so that the first one
-        # encountered goes first, this is the
-        # reverse of the usual UNITCHECK way
-        # but is what we need here.
+        # install our class finalizer
         B::CompilerPhase::Hook::append_UNITCHECK {
 
             # pre-populate the cache for all the slots
@@ -204,9 +171,36 @@ __END__
 =head1 DESCRIPTION
 
 Moxie is a reference implemenation for an object system built
-on top of the MOP. It is purposefully meant to be similar to
-the Moose/Mouse/Moo style of classes, but with a number of
-improvements as well.
+on top of a set of modules.
+
+=over 4
+
+=item L<UNIVERSAL::Object>
+
+This is the suggested base class (through L<Moxie::Object>) for
+all Moxie classes.
+
+=item L<MOP>
+
+This provides an API to Classes, Roles, Methods and Slots, which
+is use by many elements within this module.
+
+=item L<BEGIN::Lift>
+
+This module is used to create three new keywords; C<extends>,
+C<with> and C<has>. These keywords are executed during compile
+time and just make calls to the L<MOP> to affect the class
+being built.
+
+=item L<Method::Traits>
+
+This module is used to handle the method traits which are used
+mostly for method generation (accessors, predicates, etc.).
+
+=item L<B::CompilerPhase::Hook>
+
+This allows us to better manipulate the various compiler phases
+that Perl has.
 
 =cut
 
