@@ -13,7 +13,7 @@ BEGIN {
 =pod
 
 This just shows that we can apply our
-annotations and add others in if we want
+traits and add others in if we want
 
 =cut
 
@@ -28,7 +28,7 @@ annotations and add others in if we want
 
     package Foo;
     use Moxie
-        annotations => ['Bar::Annotation::Provider'];
+        traits => ['Bar::Annotation::Provider'];
 
     extends 'Moxie::Object';
 

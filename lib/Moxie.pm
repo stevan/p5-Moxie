@@ -15,13 +15,13 @@ use experimental           (); # need this later when we load features
 use Module::Runtime        (); # load things so they DWIM
 use BEGIN::Lift            (); # fake some keywords
 use B::CompilerPhase::Hook (); # multi-phase programming
-use Method::Annotation     (); # for accessor generators
+use Method::Traits         (); # for accessor generators
 
 use MOP;
 use MOP::Internal::Util;
 
 use Moxie::Object;
-use Moxie::Annotation::Provider;
+use Moxie::Traits::Provider;
 
 # TODO:
 # Everything that this &import method does should be
@@ -122,13 +122,13 @@ sub import ($class, %opts) {
             }
         );
 
-        # setup the base annotations, and
-        my @annotations = ('Moxie::Annotation::Provider');
+        # setup the base traits, and
+        my @traits = ('Moxie::Traits::Provider');
         # and anything we were asked to load ...
-        push @annotations => $opts{'annotations'}->@* if exists $opts{'annotations'};
+        push @traits => $opts{'traits'}->@* if exists $opts{'traits'};
 
         # then schedule the annotation collection ...
-        Method::Annotation::import_into( $meta, @annotations );
+        Method::Traits::import_into( $meta, @traits );
 
         # install our class finalizers in the
         # reverse order so that the first one

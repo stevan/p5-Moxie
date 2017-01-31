@@ -1,5 +1,5 @@
-package Moxie::Annotation::Provider;
-# ABSTRACT: built in annotations
+package Moxie::Traits::Provider;
+# ABSTRACT: built in traits
 
 use v5.22;
 use warnings;
@@ -8,7 +8,7 @@ use experimental qw[
     postderef
 ];
 
-use Method::Annotation ':for_providers';
+use Method::Traits ':for_providers';
 
 use B::CompilerPhase::Hook (); # multi-phase programming
 use PadWalker              (); # for generating lexical accessors
