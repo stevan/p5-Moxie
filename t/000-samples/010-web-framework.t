@@ -13,7 +13,7 @@ BEGIN {
 # traits ...
 
 package Entity::Traits::Provider {
-    use M;
+    use Moxie;
 
     use Method::Traits ':for_providers';
 
@@ -21,7 +21,7 @@ package Entity::Traits::Provider {
 }
 
 package Service::Traits::Provider {
-    use M;
+    use Moxie;
 
     use Method::Traits ':for_providers';
 
@@ -35,10 +35,10 @@ package Service::Traits::Provider {
 # this is the entity class
 
 package Todo {
-    use M
+    use Moxie
         traits => [ 'Entity::Traits::Provider' ];
 
-    extends 'M::Object';
+    extends 'Moxie::Object';
 
     has 'description';
     has 'is_done';
@@ -50,10 +50,10 @@ package Todo {
 # this is the web-service for it
 
 package TodoService {
-    use M
+    use Moxie
         traits => [ 'Service::Traits::Provider' ];
 
-    extends 'M::Object';
+    extends 'Moxie::Object';
 
     has 'todos'        => sub { +{} };
     has 'entity_class' => sub { die 'An entity_class is required' };
@@ -76,7 +76,7 @@ done_testing;
 =pod
 # this is what it ultimately generates ...
 package TodoResource {
-    use M;
+    use Moxie;
 
     extends 'Web::Machine::Resource';
 
