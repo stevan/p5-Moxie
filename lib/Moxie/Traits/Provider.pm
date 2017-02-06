@@ -10,6 +10,7 @@ use experimental qw[
 
 use Method::Traits ':for_providers';
 
+use Carp                   ();
 use B::CompilerPhase::Hook (); # multi-phase programming
 use PadWalker              (); # for generating lexical accessors
 
@@ -31,12 +32,12 @@ sub ro ( $meta, $method_name, @args ) : OverwritesMethod {
         }
     }
 
-    die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
+    Carp::croak('Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`')
         unless $meta->has_slot( $slot_name )
             || $meta->has_slot_alias( $slot_name );
 
     $meta->add_method( $method_name => sub {
-        die "Cannot assign to `$slot_name`, it is a readonly" if scalar @_ != 1;
+        Carp::croak("Cannot assign to `$slot_name`, it is a readonly") if scalar @_ != 1;
         $_[0]->{ $slot_name };
     });
 }
@@ -51,7 +52,7 @@ sub rw ( $meta, $method_name, @args ) : OverwritesMethod {
         $slot_name = $method_name;
     }
 
-    die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
+    Carp::croak('Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`')
         unless $meta->has_slot( $slot_name )
             || $meta->has_slot_alias( $slot_name );
 
@@ -76,12 +77,12 @@ sub wo ( $meta, $method_name, @args ) : OverwritesMethod {
         }
     }
 
-    die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
+    Carp::croak('Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`')
         unless $meta->has_slot( $slot_name )
             || $meta->has_slot_alias( $slot_name );
 
     $meta->add_method( $method_name => sub {
-        die "You must supply a value to write to `$slot_name`" if scalar(@_) < 1;
+        Carp::croak("You must supply a value to write to `$slot_name`") if scalar(@_) < 1;
         $_[0]->{ $slot_name } = $_[1];
     });
 }
@@ -101,7 +102,7 @@ sub predicate ( $meta, $method_name, @args ) : OverwritesMethod {
         }
     }
 
-    die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
+    Carp::croak('Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`')
         unless $meta->has_slot( $slot_name )
             || $meta->has_slot_alias( $slot_name );
 
@@ -123,7 +124,7 @@ sub clearer ( $meta, $method_name, @args ) : OverwritesMethod {
         }
     }
 
-    die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
+    Carp::croak('Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`')
         unless $meta->has_slot( $slot_name )
             || $meta->has_slot_alias( $slot_name );
 
@@ -140,7 +141,7 @@ sub private ( $meta, $method_name, @args ) {
         $slot_name = $method_name;
     }
 
-    die 'Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`'
+    Carp::croak('Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`')
         unless $meta->has_slot( $slot_name )
             || $meta->has_slot_alias( $slot_name );
 
@@ -149,8 +150,8 @@ sub private ( $meta, $method_name, @args ) {
 
     # we should not be able to find it in the symbol table ...
     if ( $meta->has_method( $method_name ) || $meta->has_method_alias( $method_name ) || $meta->requires_method( $method_name ) ) {
-        die 'Trying to install private (lexical) accessor for slot('.$slot_name.') named ('
-            .$method_name.') and found a conflicting non-lexical method of that name';
+        Carp::croak('Trying to install private (lexical) accessor for slot('.$slot_name.') named ('
+            .$method_name.') and found a conflicting non-lexical method of that name');
     }
     else {
         # at this point we can assume that we have a lexical
