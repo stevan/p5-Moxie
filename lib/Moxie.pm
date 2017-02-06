@@ -99,7 +99,7 @@ sub import ($class, %opts) {
         push @traits => $opts{'traits'}->@* if exists $opts{'traits'};
 
         # then schedule the trait collection ...
-        Method::Traits::import_into( $meta, @traits );
+        Method::Traits->import_into( $meta, @traits );
 
         # install our class finalizer
         B::CompilerPhase::Hook::append_UNITCHECK {
