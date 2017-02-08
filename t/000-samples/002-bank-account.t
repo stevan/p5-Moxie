@@ -17,7 +17,7 @@ package BankAccount {
 
     has '$!balance' => sub { 0 };
 
-    sub balance : ro($!balance);
+    sub balance : ro('$!balance');
 
     sub deposit ($self, $amount) { $self->{'$!balance'} += $amount }
 
@@ -35,7 +35,7 @@ package CheckingAccount {
 
     has '$!overdraft_account';
 
-    sub overdraft_account : ro($!overdraft_account);
+    sub overdraft_account : ro('$!overdraft_account');
 
     sub withdraw ($self, $amount) {
 

@@ -27,9 +27,9 @@ package LinkedList {
 
     # public read only accessors
 
-    sub head  : ro(_head);
-    sub tail  : ro(_tail);
-    sub count : ro(_count);
+    sub head  : ro('_head');
+    sub tail  : ro('_tail');
+    sub count : ro('_count');
 
     # methods
 
