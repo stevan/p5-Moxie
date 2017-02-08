@@ -1,5 +1,5 @@
 package Moxie;
-# ABSTRACT: Yet Another Moose Clone
+# ABSTRACT: Not Another Moose Clone
 
 use v5.22;
 use warnings;
