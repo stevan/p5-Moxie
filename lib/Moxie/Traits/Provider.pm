@@ -210,4 +210,8 @@ __END__
 
 =head1 DESCRIPTION
 
+This is a L<Method::Traits> provider module which L<Moxie> enables by
+default. These are documented in the L<METHOD TRAITS> section of the
+L<Moxie> documentation.
+
 =cut

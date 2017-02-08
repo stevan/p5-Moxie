@@ -170,7 +170,7 @@ __END__
 
 =head1 DESCRIPTION
 
-Moxie is a reference implemenation for an object system built
+L<Moxie> is a reference implemenation for an object system built
 on top of a set of modules.
 
 =over 4
@@ -178,12 +178,12 @@ on top of a set of modules.
 =item L<UNIVERSAL::Object>
 
 This is the suggested base class (through L<Moxie::Object>) for
-all Moxie classes.
+all L<Moxie> classes.
 
 =item L<MOP>
 
 This provides an API to Classes, Roles, Methods and Slots, which
-is use by many elements within this module.
+is used by many elements within this module.
 
 =item L<BEGIN::Lift>
 
@@ -201,6 +201,182 @@ mostly for method generation (accessors, predicates, etc.).
 
 This allows us to better manipulate the various compiler phases
 that Perl has.
+
+=back
+
+=head1 KEYWORDS
+
+L<Moxie> exports a few keywords using the L<BEGIN::Lift> module
+described above. These keywords are responsible for setting
+the correct state in the current package such that it conforms
+to the expectations of the L<UNIVERSAL::Object> and L<MOP>
+modules.
+
+All of these keywords are executed during the C<BEGIN> phase,
+and the keywords themselves are removed in the C<UNITCHECK>
+phase. This prevents them from being mistaken as methods by
+both L<perl> and the L<MOP>.
+
+=over 4
+
+=item C<extends @superclasses>
+
+This creates an inheritance relationship between the current
+class and the classes listed in C<@superclasses>.
+
+If this is called, L<Moxie> will assume you are a building a
+class, otherwise it will assume you are building a role. For the
+most part, you don't need to care about the difference.
+
+This will populate the C<@ISA> variable in the current package.
+
+=item C<with @roles>
+
+This sets up a role relationship between the current class or
+role and the roles listed in C<@roles>.
+
+This will cause L<Moxie> to compose the C<@roles> into the current
+class or role during the next C<UNITCHECK> phase.
+
+This will populate the C<@DOES> variable in the current package.
+
+=item C<has $name => sub { $default_value }>
+
+This creates a new slot in the current class or role, with
+C<$name> being the name of the slot and a subroutine which,
+when called, returns the C<$default_value> for that slot.
+
+This will populate the C<%HAS> variable in the current package.
+
+=back
+
+=head1 METHOD TRAITS
+
+It is possible to have L<Moxie> load your L<Method::Traits> providers,
+this is done when C<use>ing L<Moxie> like this:
+
+    use Moxie traits => [ 'My::Trait::Provider', ... ];
+
+By default L<Moxie> will enable the L<Moxie::Traits::Provider> module
+to supply this set of traits for use in L<Moxie> classes.
+
+=over 4
+
+=item C<ro( ?$slot_name )>
+
+This will generate a simple read-only accessor for a slot. The
+C<$slot_name> can optionally be specified, otherwise it will use the
+name of the method the trait is being applied.
+
+    sub foo : ro;
+    sub foo : ro('_foo');
+
+=item C<rw( ?$slot_name )>
+
+This will generate a simple read-write accessor for a slot. The
+C<$slot_name> can optionally be specified, otherwise it will use the
+name of the method the trait is being applied.
+
+    sub foo : rw;
+    sub foo : rw('_foo');
+
+=item C<wo( ?$slot_name )>
+
+This will generate a simple write-only accessor for a slot. The
+C<$slot_name> can optionally be specified, otherwise it will use the
+name of the method the trait is being applied.
+
+    sub foo : wo;
+    sub foo : wo('_foo');
+
+=item C<predicate( ?$slot_name )>
+
+This will generate a simple predicate method for a slot. The
+C<$slot_name> can optionally be specified, otherwise it will use the
+name of the method the trait is being applied.
+
+    sub foo : predicate;
+    sub foo : predicate('_foo');
+
+=item C<clearer( ?$slot_name )>
+
+This will generate a simple clearing method for a slot. The
+C<$slot_name> can optionally be specified, otherwise it will use the
+name of the method the trait is being applied.
+
+    sub foo : clearer;
+    sub foo : clearer('_foo');
+
+=item C<private( ?$slot_name )>
+
+This will generate a private read-write accessor for a slot. The
+C<$slot_name> can optionally be specified, otherwise it will use the
+name of the method the trait is being applied.
+
+    my sub foo : private;
+    my sub foo : private('_foo');
+
+The privacy is accomplished via the use of a lexical method, this means
+that the method is not availble outside of the package scope and is
+not available to participate in method dispatch, however it does
+know the current invocant, so there is no need to pass that in. This
+results in code that looks like this:
+
+    sub my_method ($self, @stuff) {
+        # simple access ...
+        my $foo = foo();
+
+        # passing to other methods ...
+        $self->do_something_with_foo( foo() );
+
+        # calling methods on an embedded object ...
+        foo()->call_method_on_foo();
+    }
+
+This feature is considered experimental, but then again, so is this
+whole module, so I guess you can safely ignore that then.
+
+=back
+
+=head1 FEATURES ENABLED
+
+This module enabled a number of features in Perl which are
+currently considered experimental, see the L<experimental>
+module for more information.
+
+=over 4
+
+=item C<signatures>
+
+=item C<postderef>
+
+=item C<postderef_qq>
+
+=item C<current_sub>
+
+=item C<lexical_subs>
+
+=item C<say>
+
+=item C<state>
+
+=item C<refaliasing>
+
+=back
+
+=head1 PRAGMAS ENABLED
+
+We enabled both the L<strict> and L<warnings> pragmas, but we disable the
+C<reserved> warning so that we can use lowercase CODE attributes with
+L<Method::Traits>.
+
+=over 4
+
+=item L<strict>
+
+=item L<warnings>
+
+=back
 
 =cut
 

@@ -34,6 +34,15 @@ __END__
 
 =head1 DESCRIPTION
 
-Extending L<UNIVERSAL::Object> for fun and profit?
+This is an extension of L<UNIVERSAL::Object> to add a C<DOES> method
+because L<UNIVERSAL::Object> doesn't know about roles (or the L<MOP>).
+
+=head1 METHOD
+
+=over 4
+
+=item C<DOES( $roles )>
+
+=back
 
 =cut
