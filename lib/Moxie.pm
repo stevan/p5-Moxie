@@ -66,9 +66,11 @@ sub import ($class, %opts) {
         experimental->import('refaliasing') if $] >= 5.022;
 
         # import has, extend and with keyword
+
+        my $new_initializer = 'package '.$caller.'; sub { undef }';
         BEGIN::Lift::install(
             ($caller, 'has') => sub ($name, $initializer = undef) {
-                $initializer ||= eval 'package '.$caller.'; sub { undef }'; # we need this to be a unique CV ... sigh
+                $initializer ||= eval $new_initializer;
                 $meta->add_slot( $name, $initializer );
                 return;
             }
