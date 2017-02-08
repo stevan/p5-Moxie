@@ -17,6 +17,8 @@ use PadWalker              (); # for generating lexical accessors
 our $VERSION   = '0.01';
 our $AUTHORITY = 'cpan:STEVAN';
 
+sub init_arg { () }
+
 sub ro ( $meta, $method_name, @args ) : OverwritesMethod {
 
     my $slot_name;

@@ -26,6 +26,17 @@ sub DOES ($self, $role) {
     return 0;
 }
 
+sub BUILD ($self, $proto) {
+    foreach my $method ( MOP::Class->new( ref $self )->methods ) {
+        if ( $method->has_code_attributes(qr/^init_arg/) ) {
+            my ($trait) = grep $_->name eq 'init_arg', Method::Traits->get_traits_for( $method );
+            if ( my $value = $proto->{ $trait->args->[0] // $method->name } ) {
+                $method->body->( $self, $value );
+            }
+        }
+    }
+}
+
 1;
 
 __END__

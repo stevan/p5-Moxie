@@ -18,11 +18,11 @@ package Point {
     has '$!x' => sub { 0 };
     has '$!y' => sub { 0 };
 
-    sub x : ro($!x);
-    sub y : ro($!y);
+    sub x : ro('$!x');
+    sub y : ro('$!y');
 
-    sub set_x : wo($!x);
-    sub set_y : wo($!y);
+    sub set_x : wo('$!x') init_arg('x');
+    sub set_y : wo('$!y') init_arg('y');
 
     sub clear ($self) {
         @{ $self }{'$!x', '$!y'} = (0, 0);
@@ -42,8 +42,8 @@ package Point3D {
 
     has '$!z' => sub { 0 };
 
-    sub z     : ro($!z);
-    sub set_z : wo($!z);
+    sub z     : ro('$!z');
+    sub set_z : wo('$!z') init_arg('z');
 
     sub pack ($self) {
         my $data = $self->next::method;
@@ -65,6 +65,28 @@ subtest '... test an instance of Point' => sub {
 
     is $p->x, 0, '... got the default value for x';
     is $p->y, 0, '... got the default value for y';
+
+    $p->set_x(10);
+    is $p->x, 10, '... got the right value for x';
+
+    $p->set_y(320);
+    is $p->y, 320, '... got the right value for y';
+
+    is_deeply $p->pack, { x => 10, y => 320 }, '... got the right value from pack';
+};
+
+subtest '... test an instance of Point' => sub {
+    my $p = Point->new( x => 10, y => 20 );
+    isa_ok($p, 'Point');
+
+    is_deeply(
+        mro::get_linear_isa('Point'),
+        [ 'Point', 'Moxie::Object', 'UNIVERSAL::Object' ],
+        '... got the expected linear isa'
+    );
+
+    is $p->x, 10, '... got the expected value for x';
+    is $p->y, 20, '... got the expected value for y';
 
     $p->set_x(10);
     is $p->x, 10, '... got the right value for x';
@@ -143,12 +165,12 @@ subtest '... meta test' => sub {
 
         {
             my $m = $Point->get_method( 'set_y' );
-            is_deeply([ $m->get_code_attributes ], ['wo($!y)'], '... we show one CODE attribute');
+            is_deeply([ $m->get_code_attributes ], ['wo(\'$!y\')', 'init_arg(\'y\')'], '... we show one CODE attribute');
         }
 
         {
             my $m = $Point->get_method( 'y' );
-            is_deeply([ $m->get_code_attributes ], ['ro($!y)'], '... we show one CODE attribute');
+            is_deeply([ $m->get_code_attributes ], ['ro(\'$!y\')'], '... we show one CODE attribute');
         }
 
     };
