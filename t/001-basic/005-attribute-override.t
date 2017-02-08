@@ -42,7 +42,7 @@ package Foo {
 
     has 'bar' => sub { 10 };
 
-    sub bar ($self) { $self->{bar} }
+    sub bar : ro;
 }
 
 package FooBar {
@@ -52,7 +52,7 @@ package FooBar {
 
     has 'bar' => sub { 100 };
 
-    sub derived_bar ($self) { $self->{bar} }
+    sub derived_bar : ro('bar');
 }
 
 my $foobar = FooBar->new;

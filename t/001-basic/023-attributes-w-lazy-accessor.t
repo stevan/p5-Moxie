@@ -18,14 +18,14 @@ package Foo {
 
     has 'bar';
 
+    sub init_bar ($self) { $self->{bar} = 200   }
     sub bar ($self, $b = undef) {
         $self->{bar} = $b if $b;
         $self->{bar} //= 333;
     }
 
-    sub has_bar   ($self) { defined $self->{bar} }
-    sub init_bar  ($self) { $self->{bar} = 200   }
-    sub clear_bar ($self) { undef $self->{bar}   }
+    sub has_bar   : predicate;
+    sub clear_bar : clearer;
 }
 
 {

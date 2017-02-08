@@ -13,8 +13,8 @@ package Foo {
     has 'foo' => sub { 'DFOO' };
     has 'bar' => sub { die 'The slot \'bar\' is required' };
 
-    sub foo ($self) { $self->{foo} }
-    sub bar ($self) { $self->{bar} }
+    sub foo : ro;
+    sub bar : ro;
 }
 
 {

@@ -26,11 +26,10 @@ package Foo {
 
     has 'bar' => sub { Bar->new };
 
-    sub bar ($self) { $self->{bar} }
-
-    sub has_bar   ($self)     { defined $self->{bar} }
-    sub set_bar   ($self, $b) { $self->{bar} = $b  }
-    sub clear_bar ($self)     { undef $self->{bar} }
+    sub bar       : ro;
+    sub has_bar   : predicate;
+    sub set_bar   : wo;
+    sub clear_bar : clearer;
 }
 
 {

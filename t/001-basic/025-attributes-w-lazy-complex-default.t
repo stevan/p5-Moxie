@@ -19,12 +19,12 @@ package Foo {
 
     has 'bar';
 
-    sub bar ($self) { $self->{bar} //= [ 5, 10, 15 ] }
+    sub init_bar ($self) { $self->{bar} = [ 1, 2, 3 ] }
+    sub bar      ($self) { $self->{bar} //= [ 5, 10, 15 ] }
 
-    sub has_bar   ($self)     { defined $self->{bar} }
-    sub set_bar   ($self, $b) { $self->{bar} = $b  }
-    sub init_bar  ($self)     { $self->{bar} = [ 1, 2, 3 ] }
-    sub clear_bar ($self)     { undef $self->{bar} }
+    sub has_bar   : predicate;
+    sub set_bar   : wo;
+    sub clear_bar : clearer;
 }
 
 {
