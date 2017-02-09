@@ -17,6 +17,8 @@ package BankAccount {
 
     has '$!balance' => sub { 0 };
 
+    sub BUILDARGS : init_args( balance => '$!balance' );
+
     sub balance : ro('$!balance');
 
     sub deposit ($self, $amount) { $self->{'$!balance'} += $amount }
@@ -35,6 +37,8 @@ package CheckingAccount {
 
     has '$!overdraft_account';
 
+    sub BUILDARGS : init_args( overdraft_account => '$!overdraft_account' );
+
     sub overdraft_account : ro('$!overdraft_account');
 
     sub withdraw ($self, $amount) {
@@ -51,7 +55,7 @@ package CheckingAccount {
 }
 
 subtest '... testing the BankAccount class' => sub {
-    my $savings = BankAccount->new( '$!balance' => 250 );
+    my $savings = BankAccount->new( balance => 250 );
     isa_ok($savings, 'BankAccount' );
 
     is $savings->balance, 250, '... got the savings balance we expected';
@@ -65,7 +69,7 @@ subtest '... testing the BankAccount class' => sub {
     subtest '... testing the CheckingAccount class' => sub {
 
         my $checking = CheckingAccount->new(
-            '$!overdraft_account' => $savings,
+            overdraft_account => $savings,
         );
         isa_ok($checking, 'CheckingAccount');
         isa_ok($checking, 'BankAccount');

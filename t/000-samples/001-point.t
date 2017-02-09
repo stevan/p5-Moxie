@@ -18,11 +18,16 @@ package Point {
     has '$!x' => sub { 0 };
     has '$!y' => sub { 0 };
 
+    sub BUILDARGS : init_args(
+        x => '$!x',
+        y => '$!y',
+    );
+
     sub x : ro('$!x');
     sub y : ro('$!y');
 
-    sub set_x : wo('$!x') init_arg('x');
-    sub set_y : wo('$!y') init_arg('y');
+    sub set_x : wo('$!x');
+    sub set_y : wo('$!y');
 
     sub clear ($self) {
         @{ $self }{'$!x', '$!y'} = (0, 0);
@@ -42,8 +47,10 @@ package Point3D {
 
     has '$!z' => sub { 0 };
 
+    sub BUILDARGS : init_args( z => '$!z' );
+
     sub z     : ro('$!z');
-    sub set_z : wo('$!z') init_arg('z');
+    sub set_z : wo('$!z');
 
     sub pack ($self) {
         my $data = $self->next::method;
@@ -75,7 +82,7 @@ subtest '... test an instance of Point' => sub {
     is_deeply $p->pack, { x => 10, y => 320 }, '... got the right value from pack';
 };
 
-subtest '... test an instance of Point' => sub {
+subtest '... test an instance of Point with args' => sub {
     my $p = Point->new( x => 10, y => 20 );
     isa_ok($p, 'Point');
 
@@ -110,6 +117,33 @@ subtest '... test an instance of Point3D' => sub {
     );
 
     is $p3d->z, 0, '... got the default value for z';
+
+    $p3d->set_x(10);
+    is $p3d->x, 10, '... got the right value for x';
+
+    $p3d->set_y(320);
+    is $p3d->y, 320, '... got the right value for y';
+
+    $p3d->set_z(30);
+    is $p3d->z, 30, '... got the right value for z';
+
+    is_deeply $p3d->pack, { x => 10, y => 320, z => 30 }, '... got the right value from pack';
+};
+
+subtest '... test an instance of Point3D with args' => sub {
+    my $p3d = Point3D->new( x => 1, y => 2, z => 3 );
+    isa_ok($p3d, 'Point3D');
+    isa_ok($p3d, 'Point');
+
+    is_deeply(
+        mro::get_linear_isa('Point3D'),
+        [ 'Point3D', 'Point', 'Moxie::Object', 'UNIVERSAL::Object' ],
+        '... got the expected linear isa'
+    );
+
+    is $p3d->x, 1, '... got the supplied value for x';
+    is $p3d->y, 2, '... got the supplied value for y';
+    is $p3d->z, 3, '... got the supplied value for z';
 
     $p3d->set_x(10);
     is $p3d->x, 10, '... got the right value for x';
@@ -165,7 +199,7 @@ subtest '... meta test' => sub {
 
         {
             my $m = $Point->get_method( 'set_y' );
-            is_deeply([ $m->get_code_attributes ], ['wo(\'$!y\')', 'init_arg(\'y\')'], '... we show one CODE attribute');
+            is_deeply([ $m->get_code_attributes ], ['wo(\'$!y\')'], '... we show one CODE attribute');
         }
 
         {

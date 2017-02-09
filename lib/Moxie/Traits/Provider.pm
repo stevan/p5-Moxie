@@ -17,7 +17,25 @@ use PadWalker              (); # for generating lexical accessors
 our $VERSION   = '0.01';
 our $AUTHORITY = 'cpan:STEVAN';
 
-sub init_arg { () }
+sub init_args ( $meta, $method_name, %init_args ) : OverwritesMethod {
+
+    Carp::croak('The `init_arg` trait can only be applied to BUILDARGS')
+        if $method_name ne 'BUILDARGS';
+
+    $meta->add_method('BUILDARGS' => sub ($self, @args) {
+        my $proto = $self->next::method( @args );
+
+        #use Data::Dumper;
+        #warn Dumper $proto;
+        #warn Dumper \%init_args;
+
+        foreach my $init_arg ( keys %init_args ) {
+            $proto->{ $init_args{ $init_arg } } = delete $proto->{ $init_arg }
+                if exists $proto->{ $init_arg };
+        }
+        return $proto;
+    });
+}
 
 sub ro ( $meta, $method_name, @args ) : OverwritesMethod {
 

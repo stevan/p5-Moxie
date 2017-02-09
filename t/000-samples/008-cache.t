@@ -18,6 +18,8 @@ package Cache {
     has '$!fetcher' => sub { die '$!fetcher is required' };
     has '$!data';
 
+    sub BUILDARGS : init_args( fetcher => '$!fetcher' );
+
     my sub fetcher : private('$!fetcher');
 
     sub has_data : predicate('$!data');
@@ -36,7 +38,7 @@ my @data = qw[
     three
 ];
 
-my $c = Cache->new( '$!fetcher' => sub { shift @data } );
+my $c = Cache->new( fetcher => sub { shift @data } );
 isa_ok($c, 'Cache');
 
 ok(!Cache->can('fetcher'), '... out private accessor is not available outside');
