@@ -30,8 +30,14 @@ sub init_args ( $meta, $method_name, %init_args ) : OverwritesMethod {
         #warn Dumper \%init_args;
 
         foreach my $init_arg ( keys %init_args ) {
-            $proto->{ $init_args{ $init_arg } } = delete $proto->{ $init_arg }
-                if exists $proto->{ $init_arg };
+            if ( exists $proto->{ $init_arg } ) {
+                if ( defined $init_args{ $init_arg } ) {
+                    $proto->{ $init_args{ $init_arg } } = delete $proto->{ $init_arg };
+                }
+                else {
+                    delete $proto->{ $init_arg };
+                }
+            }
         }
         return $proto;
     });

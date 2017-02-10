@@ -30,6 +30,8 @@ package BinaryTree {
     has 'left';
     has 'right';
 
+    sub BUILDARGS : init_args( left => undef, right => undef );
+
     sub BUILD { Scalar::Util::weaken( $_[0]->{parent} ) }
 
     sub node   : rw;
