@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Test::More;
+use Test::Fatal;
 use Data::Dumper;
 use Scalar::Util;
 
@@ -69,6 +70,17 @@ package BinaryTree {
     is($t->right->parent, $t, '... and it is us');
 
     ok(Scalar::Util::isweak( $t->right->{parent} ), '... the field was weakened correctly');
+}
+
+{
+    # this tests the `init_arg => undef` thing
+    my $left  = BinaryTree->new;
+    like(
+        exception { BinaryTree->new( left => $left ) },
+        qr/^Attempt to set slot\[left\] in constructor\, but slot has been declared un-settable \(init_arg \= undef\)/,
+        '... got the exception we expected'
+    );
+
 }
 
 package MyBinaryTree {

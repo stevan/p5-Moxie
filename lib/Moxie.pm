@@ -264,6 +264,27 @@ to supply this set of traits for use in L<Moxie> classes.
 
 =over 4
 
+=item C<init_args( arg_key => slot_name, ... )>
+
+This is a trait that is exclusively applied to the C<BUILDARGS>
+method. This is simply a shortcut to generate a C<BUILDARGS> method
+that can map a given constructor parameter to a given slot, this
+is useful for maintaining encapsulation for things like a private
+slot with a different public name.
+
+    # declare a slot with a private name
+    has _bar => sub {};
+
+    # map the `foo` key to the `_bar` slot
+    sub BUILDARGS : init_arg( foo => "_bar" );
+
+Using this same trait it is possible to also forbid a constructor
+parameter from being set, which is done by setting the C<slot_name>
+to be C<undef>. If the C<foo> key is passed to this constructor
+an exception will be thrown.
+
+    sub BUILDARGS : init_arg( foo => undef );
+
 =item C<ro( ?$slot_name )>
 
 This will generate a simple read-only accessor for a slot. The

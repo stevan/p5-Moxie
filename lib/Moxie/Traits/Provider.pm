@@ -23,22 +23,18 @@ sub init_args ( $meta, $method_name, %init_args ) : OverwritesMethod {
         if $method_name ne 'BUILDARGS';
 
     $meta->add_method('BUILDARGS' => sub ($self, @args) {
-        my $proto = $self->next::method( @args );
 
-        #use Data::Dumper;
-        #warn Dumper $proto;
-        #warn Dumper \%init_args;
+        my $proto = $self->next::method( @args );
 
         foreach my $init_arg ( keys %init_args ) {
             if ( exists $proto->{ $init_arg } ) {
-                if ( defined $init_args{ $init_arg } ) {
-                    $proto->{ $init_args{ $init_arg } } = delete $proto->{ $init_arg };
-                }
-                else {
-                    delete $proto->{ $init_arg };
-                }
+                Carp::croak('Attempt to set slot['.$init_arg.'] in constructor, but slot has been declared un-settable (init_arg = undef)')
+                    unless defined $init_args{ $init_arg };
+                # map it!
+                $proto->{ $init_args{ $init_arg } } = delete $proto->{ $init_arg };
             }
         }
+
         return $proto;
     });
 }
