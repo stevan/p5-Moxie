@@ -24,7 +24,7 @@ BEGIN {
 
     sub change_bar {
         my ($self, $value) = @_;
-        bar( $value );
+        bar = $value;
         $self;
     }
 

@@ -224,10 +224,10 @@ sub private ( $meta, $method_name, @args ) {
                     # lexical method inside the method body, so
                     # we need to generate our accessor accordingly
                     # then this is as simple as assigning the HASH key
-                    $closed_over->{ '&' . $method_name } =  sub {
+                    $closed_over->{ '&' . $method_name } =  sub () : lvalue {
                         package DB; @DB::args = (); my () = caller(1);
                         my ($self)  = @DB::args;
-                        $self->{ $slot_name } = $_[0] if scalar @_;
+                        #$self->{ $slot_name } = $_[0] if scalar @_;
                         $self->{ $slot_name };
                     };
 
