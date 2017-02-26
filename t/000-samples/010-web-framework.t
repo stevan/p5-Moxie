@@ -25,11 +25,13 @@ package Service::Traits::Provider {
 
     use Method::Traits ':for_providers';
 
-    sub GET ($meta, $method_name, $path) { () }
-    sub PUT ($meta, $method_name, $path) { () }
+    sub Path ($meta, $method_name, $path) { () }
 
-    sub consumes ($meta, $method_name, $media_type) { () }
-    sub produces ($meta, $method_name, $media_type) { () }
+    sub GET ($meta, $method_name) { () }
+    sub PUT ($meta, $method_name) { () }
+
+    sub Consumes ($meta, $method_name, $media_type) { () }
+    sub Produces ($meta, $method_name, $media_type) { () }
 }
 
 # this is the entity class
@@ -55,16 +57,13 @@ package TodoService {
 
     extends 'Moxie::Object';
 
-    has 'todos'        => sub { +{} };
-    has 'entity_class' => sub { die 'An entity_class is required' };
+    has 'todos' => sub { +{} };
 
-    sub entity_class : ro;
-
-    sub get_todo ($self, $id) : GET('/:id') produces('application/json') {
+    sub get_todo ($self, $id) : Path('/:id') GET Produces('application/json') {
         $self->{todos}->{ $id };
     }
 
-    sub update_todo ($self, $id, $todo) : PUT('/:id') consumes('application/json') {
+    sub update_todo ($self, $id, $todo) : Path('/:id') PUT Consumes('application/json') {
         return unless $self->{todos}->{ $id };
         $self->{todos}->{ $id } = $todo;
     }
