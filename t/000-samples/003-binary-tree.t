@@ -33,7 +33,7 @@ package BinaryTree {
 
     sub BUILDARGS : init_args( left => undef, right => undef );
 
-    sub BUILD { Scalar::Util::weaken( $_[0]->{parent} ) }
+    sub BUILD ($self, $) { Scalar::Util::weaken( $self->{parent} ) }
 
     sub node   : rw;
     sub parent : ro;
