@@ -45,8 +45,8 @@ package BinaryTree {
     my sub _left  : private('left');
     my sub _right : private('right');
 
-    sub left  ($self) { (_left)  //= ref($self)->new( parent => $self ) }
-    sub right ($self) { (_right) //= ref($self)->new( parent => $self ) }
+    sub left  ($self) { (_left)  //= $self->new( parent => $self ) }
+    sub right ($self) { (_right) //= $self->new( parent => $self ) }
 }
 
 {
