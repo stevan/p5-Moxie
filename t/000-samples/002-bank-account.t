@@ -17,16 +17,18 @@ package BankAccount {
 
     has '$!balance' => sub { 0 };
 
+    my sub _balance : private('$!balance');
+
     sub BUILDARGS : init_args( balance => '$!balance' );
 
     sub balance : ro('$!balance');
 
-    sub deposit ($self, $amount) { $self->{'$!balance'} += $amount }
+    sub deposit ($self, $amount) { (_balance) += $amount }
 
     sub withdraw ($self, $amount) {
-        ($self->{'$!balance'} >= $amount)
+        ((_balance) >= $amount)
             || die "Account overdrawn";
-        $self->{'$!balance'} -= $amount;
+        (_balance) -= $amount;
     }
 }
 
