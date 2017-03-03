@@ -31,9 +31,13 @@ package BinaryTree {
     has 'left';
     has 'right';
 
+    my sub _parent : private('parent');
+    my sub _left   : private('left');
+    my sub _right  : private('right');
+
     sub BUILDARGS : init_args( left => undef, right => undef );
 
-    sub BUILD ($self, $) { Scalar::Util::weaken( $self->{parent} ) }
+    sub BUILD ($self, $) { Scalar::Util::weaken( _parent ) }
 
     sub node   : rw;
     sub parent : ro;
@@ -41,9 +45,6 @@ package BinaryTree {
     sub has_parent : predicate;
     sub has_left   : predicate;
     sub has_right  : predicate;
-
-    my sub _left  : private('left');
-    my sub _right : private('right');
 
     sub left  ($self) { (_left)  //= $self->new( parent => $self ) }
     sub right ($self) { (_right) //= $self->new( parent => $self ) }
