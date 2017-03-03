@@ -1,0 +1,100 @@
+=pod
+
+=head1 With Moxie
+
+    package BinaryTree {
+        use Moxie;
+
+        use Scalar::Util ();
+
+        extends 'Moxie::Object';
+
+        has 'node';
+        has 'parent';
+        has 'left';
+        has 'right';
+
+        my sub _parent : private('parent');
+        my sub _left   : private('left');
+        my sub _right  : private('right');
+
+        sub BUILDARGS : init_args( left => undef, right => undef );
+
+        sub BUILD ($self, $) { Scalar::Util::weaken( _parent ) }
+
+        sub node   : rw;
+        sub parent : ro;
+
+        sub has_parent : predicate;
+        sub has_left   : predicate;
+        sub has_right  : predicate;
+
+        sub left  ($self) { (_left)  //= $self->new( parent => $self ) }
+        sub right ($self) { (_right) //= $self->new( parent => $self ) }
+    }
+
+=head1 Without Moxie
+
+    package BinaryTree {
+        use v5.22;
+        use strict;
+        use warnings;
+        no  warnings     qw[ reserved ];
+        use experimental qw[
+            signatures
+            postderef
+            postderef_qq
+            current_sub
+            lexical_subs
+            say
+            state
+            refaliasing
+        ];
+
+        use Carp         ();
+        use Scalar::Util ();
+
+        our @ISA; BEGIN { @ISA = ( 'UNIVERSAL::Object' ) }
+        our %HAS; BEGIN {
+            %HAS = (
+                node   => sub {},
+                parent => sub {},
+                left   => sub {},
+                right  => sub {},
+            )
+        }
+
+        my sub _parent () : lvalue { package DB; @DB::args = (); my () = caller(1); $DB::args[0]->{parent} }
+        my sub _left   () : lvalue { package DB; @DB::args = (); my () = caller(1); $DB::args[0]->{left}   }
+        my sub _right  () : lvalue { package DB; @DB::args = (); my () = caller(1); $DB::args[0]->{right}  }
+
+        sub BUILDARGS ($class, @args) {
+            my $args = $class->SUPER::BUILDARGS( @args );
+
+            foreach my $prohibited_arg (qw[ left right ]) {
+                Carp::croak('Attempt to set slot['.$prohibited_arg.'] in constructor, but slot has been declared un-settable (init_arg = undef)')
+                    if $args->{ $prohibited_arg };
+            }
+
+            return $args;
+        }
+
+        sub BUILD ($self, $) { Scalar::Util::weaken( _parent ) }
+
+        sub node ($self, $node=undef) {
+            $self->{node} = $node if defined $node;
+            $self->{node};
+        }
+
+        sub parent ($self) { $self->{parent} }
+
+        sub has_parent ($self) { defined $self->{parent} }
+        sub has_left   ($self) { defined $self->{left}   }
+        sub has_right  ($self) { defined $self->{right}  }
+
+        sub left  ($self) { (_left)  //= $self->new( parent => $self ) }
+        sub right ($self) { (_right) //= $self->new( parent => $self ) }
+    }
+
+
+=cut
