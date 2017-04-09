@@ -127,6 +127,12 @@ sub import ($class, %opts) {
                 );
             }
 
+            # TODO:
+            # Consider locking the %HAS hash now, this will
+            # prevent anyone from adding new fields after
+            # compile time.
+            # - SL
+
         };
     }
 }
