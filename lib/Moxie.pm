@@ -12,7 +12,7 @@ use experimental           (); # need this later when we load features
 use Module::Runtime        (); # load things so they DWIM
 use BEGIN::Lift            (); # fake some keywords
 use B::CompilerPhase::Hook (); # multi-phase programming
-use Method::Traits         (); # for accessor generators
+use Method::Traits         (); # for accessor/method generators
 
 use MOP;
 use MOP::Internal::Util;
@@ -336,6 +336,19 @@ name of the method the trait is being applied.
 
     sub foo : clearer;
     sub foo : clearer('_foo');
+
+=item C<handles( $slot_name->$delegate_method )>
+
+This will generate a simple delegate method for a slot. The
+C<$slot_name> and C<$delegate_method>, seperated by an arrow
+(C<< -> >>), must be specified or an exception is thrown.
+
+    sub foobar : handles('foo->bar');
+
+No attempt will be made to verify that the value stored in
+C<$slot_name> is an object, or that it responds to the
+C<$delegate_method> specified, this is the responsibility of
+the writer of the class.
 
 =item C<private( ?$slot_name )>
 
