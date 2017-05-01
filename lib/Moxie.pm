@@ -25,7 +25,6 @@ our $VERSION   = '0.01';
 our $AUTHORITY = 'cpan:STEVAN';
 
 sub import ($class, %opts) {
-
     # get the caller ...
     my $caller = caller;
 
@@ -34,108 +33,111 @@ sub import ($class, %opts) {
     # likely being loaded in a class, so
     # turn on all the features
     if ( $caller ne 'main' ) {
+        $class->import_into( $caller, \%opts );
+    }
+}
 
-        # NOTE:
-        # create the meta-object, we start
-        # with this as a role, but it will
-        # get "cast" to a class if there
-        # is a need for it.
-        my $meta = MOP::Role->new( name => $caller );
+sub import_into ($class, $caller, $opts) {
+    # NOTE:
+    # create the meta-object, we start
+    # with this as a role, but it will
+    # get "cast" to a class if there
+    # is a need for it.
+    my $meta = MOP::Role->new( name => $caller );
 
-        # turn on strict/warnings
-        strict->import;
-        warnings->import;
+    # turn on strict/warnings
+    strict->import;
+    warnings->import;
 
-        # so we can have fun with attributes ...
-        warnings->unimport('reserved');
+    # so we can have fun with attributes ...
+    warnings->unimport('reserved');
 
-        # turn on signatures and more
-        experimental->import($_) foreach qw[
-            signatures
+    # turn on signatures and more
+    experimental->import($_) foreach qw[
+        signatures
 
-            postderef
-            postderef_qq
+        postderef
+        postderef_qq
 
-            current_sub
-            lexical_subs
+        current_sub
+        lexical_subs
 
-            say
-            state
-        ];
+        say
+        state
+    ];
 
-        # turn on refaliasing if we have it ...
-        experimental->import('refaliasing') if $] >= 5.022;
+    # turn on refaliasing if we have it ...
+    experimental->import('refaliasing') if $] >= 5.022;
 
-        # import has, extend and with keyword
+    # import has, extend and with keyword
 
-        my $new_initializer = 'package '.$caller.'; sub { undef }';
-        BEGIN::Lift::install(
-            ($caller, 'has') => sub ($name, $initializer = undef) {
-                $initializer ||= eval $new_initializer;
-                $meta->add_slot( $name, $initializer );
-                return;
-            }
-        );
+    my $new_initializer = 'package '.$caller.'; sub { undef }';
+    BEGIN::Lift::install(
+        ($caller, 'has') => sub ($name, $initializer = undef) {
+            $initializer ||= eval $new_initializer;
+            $meta->add_slot( $name, $initializer );
+            return;
+        }
+    );
 
-        BEGIN::Lift::install(
-            ($caller, 'extends') => sub (@isa) {
-                Module::Runtime::use_package_optimistically( $_ ) foreach @isa;
-                ($meta->isa('MOP::Class')
-                    ? $meta
-                    : (bless $meta => 'MOP::Class') # cast into class
-                )->set_superclasses( @isa );
-                return;
-            }
-        );
+    BEGIN::Lift::install(
+        ($caller, 'extends') => sub (@isa) {
+            Module::Runtime::use_package_optimistically( $_ ) foreach @isa;
+            ($meta->isa('MOP::Class')
+                ? $meta
+                : (bless $meta => 'MOP::Class') # cast into class
+            )->set_superclasses( @isa );
+            return;
+        }
+    );
 
-        BEGIN::Lift::install(
-            ($caller, 'with') => sub (@does) {
-                Module::Runtime::use_package_optimistically( $_ ) foreach @does;
-                $meta->set_roles( @does );
-                return;
-            }
-        );
+    BEGIN::Lift::install(
+        ($caller, 'with') => sub (@does) {
+            Module::Runtime::use_package_optimistically( $_ ) foreach @does;
+            $meta->set_roles( @does );
+            return;
+        }
+    );
 
-        # setup the base traits, and
-        my @traits = ('Moxie::Traits::Provider');
-        # and anything we were asked to load ...
-        push @traits => $opts{'traits'}->@* if exists $opts{'traits'};
+    # setup the base traits, and
+    my @traits = ('Moxie::Traits::Provider');
+    # and anything we were asked to load ...
+    push @traits => $opts->{'traits'}->@* if exists $opts->{'traits'};
 
-        # then schedule the trait collection ...
-        Method::Traits->import_into( $meta, @traits );
+    # then schedule the trait collection ...
+    Method::Traits->import_into( $meta, @traits );
 
-        # install our class finalizer
-        B::CompilerPhase::Hook::append_UNITCHECK {
+    # install our class finalizer
+    B::CompilerPhase::Hook::append_UNITCHECK {
 
-            # pre-populate the cache for all the slots
-            if ( $meta->isa('MOP::Class') ) {
-                foreach my $super ( map { MOP::Role->new( name => $_ ) } $meta->mro->@* ) {
-                    foreach my $attr ( $super->slots ) {
-                        $meta->alias_slot( $attr->name, $attr->initializer )
-                            unless $meta->has_slot( $attr->name )
-                                || $meta->has_slot_alias( $attr->name );
-                    }
+        # pre-populate the cache for all the slots
+        if ( $meta->isa('MOP::Class') ) {
+            foreach my $super ( map { MOP::Role->new( name => $_ ) } $meta->mro->@* ) {
+                foreach my $attr ( $super->slots ) {
+                    $meta->alias_slot( $attr->name, $attr->initializer )
+                        unless $meta->has_slot( $attr->name )
+                            || $meta->has_slot_alias( $attr->name );
                 }
             }
+        }
 
-            # apply roles ...
-            if ( my @does = $meta->roles ) {
-                #warn sprintf "Applying roles(%s) to class/role(%s)" => (join ', ' => @does), $meta->name;
-                MOP::Internal::Util::APPLY_ROLES(
-                    $meta,
-                    \@does,
-                    to => ($meta->isa('MOP::Class') ? 'class' : 'role')
-                );
-            }
+        # apply roles ...
+        if ( my @does = $meta->roles ) {
+            #warn sprintf "Applying roles(%s) to class/role(%s)" => (join ', ' => @does), $meta->name;
+            MOP::Internal::Util::APPLY_ROLES(
+                $meta,
+                \@does,
+                to => ($meta->isa('MOP::Class') ? 'class' : 'role')
+            );
+        }
 
-            # TODO:
-            # Consider locking the %HAS hash now, this will
-            # prevent anyone from adding new fields after
-            # compile time.
-            # - SL
+        # TODO:
+        # Consider locking the %HAS hash now, this will
+        # prevent anyone from adding new fields after
+        # compile time.
+        # - SL
 
-        };
-    }
+    };
 }
 
 1;
