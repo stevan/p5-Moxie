@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Test::More;
+use Test::Fatal;
 
 package Foo {
     use Moxie;
@@ -29,10 +30,10 @@ package Foo {
     is($foo->bar, 'BAR', 'required slot with arg');
 }
 
-eval { Foo->new };
-like( $@,
-      qr/^The slot \'bar\' is required/,
-      'missing required slot throws an exception'
+like(
+    exception { Foo->new },
+    qr/^The slot \'bar\' is required/,
+    'missing required slot throws an exception'
 );
 
 

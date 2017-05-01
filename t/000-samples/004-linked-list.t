@@ -113,12 +113,12 @@ package LinkedListNode {
 
     # public r/w API
 
-    sub get_previous : ro(_prev);
-    sub get_next     : ro(_next);
+    sub get_previous : ro('_prev');
+    sub get_next     : ro('_next');
     sub get_value    : ro;
 
-    sub set_previous : wo(_prev);
-    sub set_next     : wo(_next);
+    sub set_previous : wo('_prev');
+    sub set_next     : wo('_next');
     sub set_value    : wo;
 
     sub detach {

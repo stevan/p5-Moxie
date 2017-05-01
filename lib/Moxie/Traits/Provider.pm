@@ -153,6 +153,22 @@ sub clearer ( $meta, $method_name, @args ) : OverwritesMethod {
     $meta->add_method( $method_name => sub { undef $_[0]->{ $slot_name } } );
 }
 
+sub handles ( $meta, $method_name, @args ) : OverwritesMethod {
+
+    my ($slot_name, $delegate) = ($args[0] =~ /^(.*)\-\>(.*)$/);
+
+    Carp::croak('Delegation spec must be in the pattern `slot->method`, not '.$args[0])
+        unless $slot_name && $delegate;
+
+    Carp::croak('Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`')
+        unless $meta->has_slot( $slot_name )
+            || $meta->has_slot_alias( $slot_name );
+
+    $meta->add_method( $method_name => sub {
+        $_[0]->{ $slot_name }->$delegate( @_[ 1 .. $#_ ] );
+    });
+}
+
 sub private ( $meta, $method_name, @args ) {
 
     my $slot_name;
