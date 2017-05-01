@@ -8,6 +8,8 @@ use experimental qw[
     postderef
 ];
 
+use UNIVERSAL::Object;
+
 our $VERSION   = '0.01';
 our $AUTHORITY = 'cpan:STEVAN';
 

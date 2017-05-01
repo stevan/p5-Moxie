@@ -8,9 +8,6 @@ use experimental qw[
     postderef
 ];
 
-our $VERSION   = '0.01';
-our $AUTHORITY = 'cpan:STEVAN';
-
 use experimental           (); # need this later when we load features
 use Module::Runtime        (); # load things so they DWIM
 use BEGIN::Lift            (); # fake some keywords
@@ -21,7 +18,11 @@ use MOP;
 use MOP::Internal::Util;
 
 use Moxie::Object;
+use Moxie::Object::Immutable;
 use Moxie::Traits::Provider;
+
+our $VERSION   = '0.01';
+our $AUTHORITY = 'cpan:STEVAN';
 
 sub import ($class, %opts) {
 
