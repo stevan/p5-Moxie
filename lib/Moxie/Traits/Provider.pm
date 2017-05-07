@@ -54,7 +54,7 @@ sub ro ( $meta, $method_name, @args ) : OverwritesMethod {
         }
     }
 
-    Carp::croak('Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`')
+    Carp::croak('Unable to build `ro` accessor for slot `' . $slot_name.'` in `'.$meta->name.'` because the slot cannot be found.')
         unless $meta->has_slot( $slot_name )
             || $meta->has_slot_alias( $slot_name );
 
@@ -74,7 +74,7 @@ sub rw ( $meta, $method_name, @args ) : OverwritesMethod {
         $slot_name = $method_name;
     }
 
-    Carp::croak('Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`')
+    Carp::croak('Unable to build `rw` accessor for slot `' . $slot_name.'` in `'.$meta->name.'` because the slot cannot be found.')
         unless $meta->has_slot( $slot_name )
             || $meta->has_slot_alias( $slot_name );
 
@@ -99,7 +99,7 @@ sub wo ( $meta, $method_name, @args ) : OverwritesMethod {
         }
     }
 
-    Carp::croak('Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`')
+    Carp::croak('Unable to build `wo` accessor for slot `' . $slot_name.'` in `'.$meta->name.'` because the slot cannot be found.')
         unless $meta->has_slot( $slot_name )
             || $meta->has_slot_alias( $slot_name );
 
@@ -124,7 +124,7 @@ sub predicate ( $meta, $method_name, @args ) : OverwritesMethod {
         }
     }
 
-    Carp::croak('Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`')
+    Carp::croak('Unable to build predicate for slot `' . $slot_name.'` in `'.$meta->name.'` because the slot cannot be found.')
         unless $meta->has_slot( $slot_name )
             || $meta->has_slot_alias( $slot_name );
 
@@ -146,7 +146,7 @@ sub clearer ( $meta, $method_name, @args ) : OverwritesMethod {
         }
     }
 
-    Carp::croak('Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`')
+    Carp::croak('Unable to build `clearer` accessor for slot `' . $slot_name.'` in `'.$meta->name.'` because the slot cannot be found.')
         unless $meta->has_slot( $slot_name )
             || $meta->has_slot_alias( $slot_name );
 
@@ -160,7 +160,7 @@ sub handles ( $meta, $method_name, @args ) : OverwritesMethod {
     Carp::croak('Delegation spec must be in the pattern `slot->method`, not '.$args[0])
         unless $slot_name && $delegate;
 
-    Carp::croak('Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`')
+    Carp::croak('Unable to build delegation method for slot `' . $slot_name.'` in `'.$meta->name.'` because the slot cannot be found.')
         unless $meta->has_slot( $slot_name )
             || $meta->has_slot_alias( $slot_name );
 
@@ -179,7 +179,7 @@ sub private ( $meta, $method_name, @args ) {
         $slot_name = $method_name;
     }
 
-    Carp::croak('Unable to find slot `' . $slot_name.'` in `'.$meta->name.'`')
+    Carp::croak('Unable to build private accessor for slot `' . $slot_name.'` in `'.$meta->name.'` because the slot cannot be found.')
         unless $meta->has_slot( $slot_name )
             || $meta->has_slot_alias( $slot_name );
 
@@ -188,8 +188,9 @@ sub private ( $meta, $method_name, @args ) {
 
     # we should not be able to find it in the symbol table ...
     if ( $meta->has_method( $method_name ) || $meta->has_method_alias( $method_name ) || $meta->requires_method( $method_name ) ) {
-        Carp::croak('Trying to install private (lexical) accessor for slot('.$slot_name.') named ('
-            .$method_name.') and found a conflicting non-lexical method of that name');
+        Carp::croak('Unable to install private (lexical) accessor for slot('.$slot_name.') named ('
+            .$method_name.') because we found a conflicting non-lexical method of that name. '
+            .'Private methods must be defined before any public methods of the same name.');
     }
     else {
         # at this point we can assume that we have a lexical
