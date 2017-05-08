@@ -85,7 +85,14 @@ sub import_into ($class, $caller, $opts) {
             Module::Runtime::use_package_optimistically( $_ ) foreach @isa;
             ($meta->isa('MOP::Class')
                 ? $meta
-                : (bless $meta => 'MOP::Class') # cast into class
+                : do {
+                    # FIXME:
+                    # This is gross ... - SL
+                    Internals::SvREADONLY( $$meta, 0 );
+                    bless $meta => 'MOP::Class'; # cast into class
+                    Internals::SvREADONLY( $$meta, 1 );
+                    $meta;
+                }
             )->set_superclasses( @isa );
             return;
         }
