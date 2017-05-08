@@ -17,7 +17,9 @@ use PadWalker              (); # for generating lexical accessors
 our $VERSION   = '0.01';
 our $AUTHORITY = 'cpan:STEVAN';
 
-sub init_args ( $meta, $method_name, %init_args ) : OverwritesMethod {
+sub init_args ( $meta, $method, %init_args ) : OverwritesMethod {
+
+    my $method_name = $method->name;
 
     Carp::croak('The `init_arg` trait can only be applied to BUILDARGS')
         if $method_name ne 'BUILDARGS';
@@ -39,7 +41,9 @@ sub init_args ( $meta, $method_name, %init_args ) : OverwritesMethod {
     });
 }
 
-sub ro ( $meta, $method_name, @args ) : OverwritesMethod {
+sub ro ( $meta, $method, @args ) : OverwritesMethod {
+
+    my $method_name = $method->name;
 
     my $slot_name;
     if ( $args[0] ) {
@@ -64,7 +68,9 @@ sub ro ( $meta, $method_name, @args ) : OverwritesMethod {
     });
 }
 
-sub rw ( $meta, $method_name, @args ) : OverwritesMethod {
+sub rw ( $meta, $method, @args ) : OverwritesMethod {
+
+    my $method_name = $method->name;
 
     my $slot_name;
     if ( $args[0] ) {
@@ -84,7 +90,9 @@ sub rw ( $meta, $method_name, @args ) : OverwritesMethod {
     });
 }
 
-sub wo ( $meta, $method_name, @args ) : OverwritesMethod {
+sub wo ( $meta, $method, @args ) : OverwritesMethod {
+
+    my $method_name = $method->name;
 
     my $slot_name;
     if ( $args[0] ) {
@@ -109,7 +117,9 @@ sub wo ( $meta, $method_name, @args ) : OverwritesMethod {
     });
 }
 
-sub predicate ( $meta, $method_name, @args ) : OverwritesMethod {
+sub predicate ( $meta, $method, @args ) : OverwritesMethod {
+
+    my $method_name = $method->name;
 
     my $slot_name;
     if ( $args[0] ) {
@@ -131,7 +141,9 @@ sub predicate ( $meta, $method_name, @args ) : OverwritesMethod {
     $meta->add_method( $method_name => sub { defined $_[0]->{ $slot_name } } );
 }
 
-sub clearer ( $meta, $method_name, @args ) : OverwritesMethod {
+sub clearer ( $meta, $method, @args ) : OverwritesMethod {
+
+    my $method_name = $method->name;
 
     my $slot_name;
     if ( $args[0] ) {
@@ -153,7 +165,9 @@ sub clearer ( $meta, $method_name, @args ) : OverwritesMethod {
     $meta->add_method( $method_name => sub { undef $_[0]->{ $slot_name } } );
 }
 
-sub handles ( $meta, $method_name, @args ) : OverwritesMethod {
+sub handles ( $meta, $method, @args ) : OverwritesMethod {
+
+    my $method_name = $method->name;
 
     my ($slot_name, $delegate) = ($args[0] =~ /^(.*)\-\>(.*)$/);
 
@@ -169,7 +183,9 @@ sub handles ( $meta, $method_name, @args ) : OverwritesMethod {
     });
 }
 
-sub private ( $meta, $method_name, @args ) {
+sub private ( $meta, $method, @args ) {
+
+    my $method_name = $method->name;
 
     my $slot_name;
     if ( $args[0] ) {
