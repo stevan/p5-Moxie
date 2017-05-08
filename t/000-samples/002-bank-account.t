@@ -17,7 +17,7 @@ package BankAccount {
 
     has '$!balance' => sub { 0 };
 
-    my sub _balance : prototype() private('$!balance');
+    my sub _balance : private('$!balance');
 
     sub BUILDARGS : init_args( balance => '$!balance' );
 

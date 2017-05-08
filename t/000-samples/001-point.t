@@ -18,8 +18,8 @@ package Point {
     has '$!x' => sub { 0 };
     has '$!y' => sub { 0 };
 
-    my sub _x : prototype() private('$!x');
-    my sub _y : prototype() private('$!y');
+    my sub _x : private('$!x');
+    my sub _y : private('$!y');
 
     sub BUILDARGS : init_args(
         x => '$!x',

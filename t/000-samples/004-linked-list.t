@@ -21,9 +21,9 @@ package LinkedList {
 
     # private lvalue accessors
 
-    my sub _head  : prototype() private;
-    my sub _tail  : prototype() private;
-    my sub _count : prototype() private;
+    my sub _head  : private;
+    my sub _tail  : private;
+    my sub _count : private;
 
     # public read only accessors
 
@@ -108,8 +108,8 @@ package LinkedListNode {
 
     # private r/w accessors
 
-    my sub _prev : prototype() private;
-    my sub _next : prototype() private;
+    my sub _prev : private;
+    my sub _next : private;
 
     # public r/w API
 

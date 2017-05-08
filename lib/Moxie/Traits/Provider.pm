@@ -12,6 +12,7 @@ use Method::Traits ':for_providers';
 
 use Carp                   ();
 use B::CompilerPhase::Hook (); # multi-phase programming
+use Sub::Util              ();
 use PadWalker              (); # for generating lexical accessors
 
 our $VERSION   = '0.01';
@@ -209,6 +210,10 @@ sub private ( $meta, $method, @args ) {
             .'Private methods must be defined before any public methods of the same name.');
     }
     else {
+        # set the prototype here so that the compiler sees
+        # this as early as possible ...
+        Sub::Util::set_prototype( '', $method->body );
+
         # at this point we can assume that we have a lexical
         # method which we need to transform, and in order to
         # do that we need to look at all the methods in this
@@ -221,6 +226,7 @@ sub private ( $meta, $method, @args ) {
         # because we need all the methods of this class to
         # have been compiled, at this moment, they are not.
         B::CompilerPhase::Hook::enqueue_UNITCHECK {
+
             # now check the class local methods ....
             foreach my $m ( $meta->methods ) {
                 # get a HASH of the things the method closes over
@@ -240,7 +246,7 @@ sub private ( $meta, $method, @args ) {
                     # lexical method inside the method body, so
                     # we need to generate our accessor accordingly
                     # then this is as simple as assigning the HASH key
-                    $closed_over->{ '&' . $method_name } =  sub () : lvalue {
+                    $closed_over->{ '&' . $method_name } =  sub : lvalue {
                         package DB; @DB::args = (); my () = caller(1);
                         my ($self)  = @DB::args;
                         #$self->{ $slot_name } = $_[0] if scalar @_;
