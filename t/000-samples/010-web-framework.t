@@ -59,13 +59,15 @@ package TodoService {
 
     has 'todos' => sub { +{} };
 
+    my sub todos : prototype() private;
+
     sub get_todo ($self, $id) : Path('/:id') GET Produces('application/json') {
-        $self->{todos}->{ $id };
+        todos->{ $id };
     }
 
     sub update_todo ($self, $id, $todo) : Path('/:id') PUT Consumes('application/json') {
-        return unless $self->{todos}->{ $id };
-        $self->{todos}->{ $id } = $todo;
+        return unless todos->{ $id };
+        todos->{ $id } = $todo;
     }
 }
 

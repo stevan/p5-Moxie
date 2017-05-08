@@ -30,7 +30,7 @@ BEGIN {
 
     sub to_string {
         my ($self) = @_;
-        join ', ' => foo(), bar();
+        join ', ' => foo, bar;
     }
 }
 

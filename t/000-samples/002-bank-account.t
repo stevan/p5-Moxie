@@ -17,18 +17,18 @@ package BankAccount {
 
     has '$!balance' => sub { 0 };
 
-    my sub _balance : private('$!balance');
+    my sub _balance : prototype() private('$!balance');
 
     sub BUILDARGS : init_args( balance => '$!balance' );
 
     sub balance : ro('$!balance');
 
-    sub deposit ($self, $amount) { (_balance) += $amount }
+    sub deposit ($self, $amount) { _balance += $amount }
 
     sub withdraw ($self, $amount) {
-        ((_balance) >= $amount)
+        (_balance >= $amount)
             || die "Account overdrawn";
-        (_balance) -= $amount;
+        _balance -= $amount;
     }
 }
 
@@ -39,6 +39,8 @@ package CheckingAccount {
 
     has '$!overdraft_account';
 
+    my sub _overdraft_account : prototype() private('$!overdraft_account');
+
     sub BUILDARGS : init_args( overdraft_account => '$!overdraft_account' );
 
     sub overdraft_account : ro('$!overdraft_account');
@@ -47,8 +49,8 @@ package CheckingAccount {
 
         my $overdraft_amount = $amount - $self->balance;
 
-        if ( $self->{'$!overdraft_account'} && $overdraft_amount > 0 ) {
-            $self->{'$!overdraft_account'}->withdraw( $overdraft_amount );
+        if ( _overdraft_account && $overdraft_amount > 0 ) {
+            _overdraft_account->withdraw( $overdraft_amount );
             $self->deposit( $overdraft_amount );
         }
 

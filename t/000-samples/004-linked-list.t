@@ -21,9 +21,9 @@ package LinkedList {
 
     # private lvalue accessors
 
-    my sub _head  : private;
-    my sub _tail  : private;
-    my sub _count : private;
+    my sub _head  : prototype() private;
+    my sub _tail  : prototype() private;
+    my sub _count : prototype() private;
 
     # public read only accessors
 
@@ -35,58 +35,58 @@ package LinkedList {
 
     sub append ($self, $node) {
         unless ( _tail ) {
-            (_tail) = $node;
-            (_head) = $node;
-            (_count)++;
+            _tail = $node;
+            _head = $node;
+            _count++;
             return;
         }
-        (_tail)->set_next($node);
+        _tail->set_next($node);
         $node->set_previous(_tail);
-        (_tail) = $node;
-        (_count)++;
+        _tail = $node;
+        _count++;
     }
 
     sub insert ($self, $index, $node) {
         die "Index ($index) out of bounds"
-            if $index < 0 or $index > (_count) - 1;
+            if $index < 0 or $index > _count - 1;
 
-        my $tmp = (_head);
+        my $tmp = _head;
         $tmp = $tmp->get_next while($index--);
         $node->set_previous($tmp->get_previous);
         $node->set_next($tmp);
         $tmp->get_previous->set_next($node);
         $tmp->set_previous($node);
-        (_count)++;
+        _count++;
     }
 
     sub remove ($self, $index) {
         die "Index ($index) out of bounds"
-            if $index < 0 or $index > (_count) - 1;
+            if $index < 0 or $index > _count - 1;
 
-        my $tmp = (_head);
+        my $tmp = _head;
         $tmp = $tmp->get_next while($index--);
         $tmp->get_previous->set_next($tmp->get_next);
         $tmp->get_next->set_previous($tmp->get_previous);
-        (_count)--;
+        _count--;
         $tmp->detach();
     }
 
     sub prepend ($self, $node) {
         unless ( _head ) {
-            (_tail) = $node;
-            (_head) = $node;
-            (_count)++;
+            _tail = $node;
+            _head = $node;
+            _count++;
             return;
         }
-        (_head)->set_previous($node);
+        _head->set_previous($node);
         $node->set_next(_head);
-        (_head) = $node;
-        (_count)++;
+        _head = $node;
+        _count++;
     }
 
     sub sum ($self) {
         my $sum = 0;
-        my $tmp = (_head);
+        my $tmp = _head;
         do { $sum += $tmp->get_value } while($tmp = $tmp->get_next);
         return $sum;
     }
@@ -108,8 +108,8 @@ package LinkedListNode {
 
     # private r/w accessors
 
-    my sub _prev : private;
-    my sub _next : private;
+    my sub _prev : prototype() private;
+    my sub _next : prototype() private;
 
     # public r/w API
 
@@ -122,8 +122,8 @@ package LinkedListNode {
     sub set_value    : wo;
 
     sub detach {
-        (_prev) = undef;
-        (_next) = undef;
+        _prev = undef;
+        _next = undef;
         $_[0]
     }
 }

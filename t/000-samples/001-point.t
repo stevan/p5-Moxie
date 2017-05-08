@@ -18,8 +18,8 @@ package Point {
     has '$!x' => sub { 0 };
     has '$!y' => sub { 0 };
 
-    my sub _x : private('$!x');
-    my sub _y : private('$!y');
+    my sub _x : prototype() private('$!x');
+    my sub _y : prototype() private('$!y');
 
     sub BUILDARGS : init_args(
         x => '$!x',
@@ -37,7 +37,7 @@ package Point {
     }
 
     sub pack ($self) {
-        +{ x => $self->x, y => $self->y }
+        +{ x => _x, y => _y }
     }
 }
 
@@ -59,7 +59,7 @@ package Point3D {
 
     sub pack ($self) {
         my $data = $self->next::method;
-        $data->{z} = (_z);
+        $data->{z} = _z;
         $data;
     }
 }
