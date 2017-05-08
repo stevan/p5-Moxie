@@ -29,8 +29,8 @@
         sub has_left   : predicate;
         sub has_right  : predicate;
 
-        sub left  ($self) { (_left)  //= $self->new( parent => $self ) }
-        sub right ($self) { (_right) //= $self->new( parent => $self ) }
+        sub left  ($self) { _left  //= $self->new( parent => $self ) }
+        sub right ($self) { _right //= $self->new( parent => $self ) }
     }
 
 =head1 Without Moxie
@@ -64,9 +64,9 @@
             )
         }
 
-        my sub _parent () : lvalue { package DB; @DB::args = (); my () = caller(1); $DB::args[0]->{parent} }
-        my sub _left   () : lvalue { package DB; @DB::args = (); my () = caller(1); $DB::args[0]->{left}   }
-        my sub _right  () : lvalue { package DB; @DB::args = (); my () = caller(1); $DB::args[0]->{right}  }
+        my sub _parent : prototype() lvalue { package DB; @DB::args = (); my () = caller(1); $DB::args[0]->{parent} }
+        my sub _left   : prototype() lvalue { package DB; @DB::args = (); my () = caller(1); $DB::args[0]->{left}   }
+        my sub _right  : prototype() lvalue { package DB; @DB::args = (); my () = caller(1); $DB::args[0]->{right}  }
 
         sub BUILDARGS ($class, @args) {
             my $args = $class->SUPER::BUILDARGS( @args );
@@ -92,8 +92,8 @@
         sub has_left   ($self) { defined $self->{left}   }
         sub has_right  ($self) { defined $self->{right}  }
 
-        sub left  ($self) { (_left)  //= $self->new( parent => $self ) }
-        sub right ($self) { (_right) //= $self->new( parent => $self ) }
+        sub left  ($self) { _left  //= $self->new( parent => $self ) }
+        sub right ($self) { _right //= $self->new( parent => $self ) }
     }
 
 
