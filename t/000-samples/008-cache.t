@@ -29,7 +29,7 @@ package Cache {
         $self->{'$!data'} //= $self->_fetch_data;
     }
 
-    sub _fetch_data ($self) { (fetcher)->() }
+    sub _fetch_data ($self) { fetcher->() }
 }
 
 my @data = qw[
