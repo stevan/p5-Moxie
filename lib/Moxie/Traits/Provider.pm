@@ -81,6 +81,9 @@ sub rw ( $meta, $method, @args ) : OverwritesMethod {
         $slot_name = $method_name;
     }
 
+    Carp::croak('Unable to build `rw` accessor for slot `' . $slot_name.'` in `'.$meta->name.'` because class is immutable.')
+        if ($meta->name)->isa('Moxie::Object::Immutable');
+
     Carp::croak('Unable to build `rw` accessor for slot `' . $slot_name.'` in `'.$meta->name.'` because the slot cannot be found.')
         unless $meta->has_slot( $slot_name )
             || $meta->has_slot_alias( $slot_name );
@@ -107,6 +110,9 @@ sub wo ( $meta, $method, @args ) : OverwritesMethod {
             $slot_name = $method_name;
         }
     }
+
+    Carp::croak('Unable to build `wo` accessor for slot `' . $slot_name.'` in `'.$meta->name.'` because class is immutable.')
+        if ($meta->name)->isa('Moxie::Object::Immutable');
 
     Carp::croak('Unable to build `wo` accessor for slot `' . $slot_name.'` in `'.$meta->name.'` because the slot cannot be found.')
         unless $meta->has_slot( $slot_name )
@@ -158,6 +164,9 @@ sub clearer ( $meta, $method, @args ) : OverwritesMethod {
             $slot_name = $method_name;
         }
     }
+
+    Carp::croak('Unable to build `clearer` accessor for slot `' . $slot_name.'` in `'.$meta->name.'` because class is immutable.')
+        if ($meta->name)->isa('Moxie::Object::Immutable');
 
     Carp::croak('Unable to build `clearer` accessor for slot `' . $slot_name.'` in `'.$meta->name.'` because the slot cannot be found.')
         unless $meta->has_slot( $slot_name )
@@ -227,6 +236,10 @@ sub private ( $meta, $method, @args ) {
         # have been compiled, at this moment, they are not.
         B::CompilerPhase::Hook::enqueue_UNITCHECK {
 
+            # now see if this class is immutable or not, it will
+            # determine the type of accessor we generate ...
+            my $class_is_immutable = ($meta->name)->isa('Moxie::Object::Immutable');
+
             # now check the class local methods ....
             foreach my $m ( $meta->methods ) {
                 # get a HASH of the things the method closes over
@@ -245,13 +258,34 @@ sub private ( $meta, $method, @args ) {
                     # now we know that we have someone using the
                     # lexical method inside the method body, so
                     # we need to generate our accessor accordingly
+
+                    my $accessor;
+                    if ( $class_is_immutable ) {
+                        # NOTE:
+                        # if the class is immutable, perl will sometimes
+                        # complain about accessing a read-only value in
+                        # a way it is not comfortable, and this can be
+                        # annoying. However, since we actually told perl
+                        # that we want to be immutable, there actually is
+                        # no need to generate the lvalue accessor when
+                        # we can make a read-only one.
+                        # - SL
+                        $accessor = sub {
+                            package DB; @DB::args = (); my () = caller(1);
+                            my ($self) = @DB::args;
+                            $self->{ $slot_name };
+                        };
+                    }
+                    else {
+                        $accessor = sub : lvalue {
+                            package DB; @DB::args = (); my () = caller(1);
+                            my ($self) = @DB::args;
+                            $self->{ $slot_name };
+                        };
+                    }
+
                     # then this is as simple as assigning the HASH key
-                    $closed_over->{ '&' . $method_name } =  sub : lvalue {
-                        package DB; @DB::args = (); my () = caller(1);
-                        my ($self)  = @DB::args;
-                        #$self->{ $slot_name } = $_[0] if scalar @_;
-                        $self->{ $slot_name };
-                    };
+                    $closed_over->{ '&' . $method_name } = $accessor;
 
                     # okay, now restore the closed over vars
                     # with our new addition...
