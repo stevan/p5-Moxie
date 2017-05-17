@@ -23,7 +23,8 @@ BEGIN {
     my sub bar : private;
 
     sub change_bar {
-        my ($self, $value) = @_;
+        my $self = shift; # we are safe even with modifications to @_
+        my ($value) = @_;
         bar = $value;
         $self;
     }
