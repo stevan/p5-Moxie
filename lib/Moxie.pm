@@ -69,6 +69,10 @@ sub import_into ($class, $caller, $opts) {
     # turn on refaliasing if we have it ...
     experimental->import('refaliasing') if $] >= 5.022;
 
+    # TODO:
+    # add in the newer features from 5.26.0
+    # - SL
+
     # import has, extend and with keyword
 
     my $new_initializer = 'package '.$caller.'; sub { undef }';
