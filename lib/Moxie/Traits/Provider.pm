@@ -264,6 +264,17 @@ sub private ( $meta, $method, @args ) {
                     # lexical method inside the method body, so
                     # we need to generate our accessor accordingly
 
+                    # XXX:
+                    # The DB::args stuff below is fragile because it
+                    # is susceptible to alteration of @_ in the
+                    # method that calls these accessors. Perhaps this
+                    # can be fixed with XS, but for now we are going
+                    # to assume people aren't doing this since they
+                    # *should* be using the signatures that we enable
+                    # for them.
+                    # - SL
+
+
                     my $accessor;
                     if ( $class_is_immutable ) {
                         # NOTE:
