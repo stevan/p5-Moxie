@@ -69,9 +69,8 @@ sub import_into ($class, $caller, $opts) {
     # turn on refaliasing if we have it ...
     experimental->import('refaliasing') if $] >= 5.022;
 
-    # TODO:
-    # add in the newer features from 5.26.0
-    # - SL
+    # turn on declared refs if we have it ...
+    experimental->import('declared_refs') if $] >= 5.026;
 
     # import has, extend and with keyword
 
