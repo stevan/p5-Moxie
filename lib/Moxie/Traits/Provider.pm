@@ -257,6 +257,11 @@ sub private ( $meta, $method, @args ) {
                 #    looking_for => $method_name,
                 #});
 
+                # XXX:
+                # Consider using something like Text::Levenshtein
+                # to check for typos in the accessor usage.
+                # - SL
+
                 # if the private method is used, then it will be
                 # here with a prepended `&` sigil ...
                 if ( exists $closed_over->{ '&' . $method_name } ) {
@@ -273,7 +278,6 @@ sub private ( $meta, $method, @args ) {
                     # *should* be using the signatures that we enable
                     # for them.
                     # - SL
-
 
                     my $accessor;
                     if ( $class_is_immutable ) {
