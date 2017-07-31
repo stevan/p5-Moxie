@@ -22,8 +22,8 @@ package Point {
     my sub _y : private;
 
     sub BUILDARGS : init_args(
-        x => '_x',
-        y => '_y',
+        'x?' => '_x',
+        'y?' => '_y',
     );
 
     sub x : ro('_x');
@@ -52,7 +52,11 @@ package Point3D {
 
     my sub _z : private;
 
-    sub BUILDARGS : init_args( z => '_z' );
+    sub BUILDARGS : init_args( 
+        'x?' => 'super(x)',
+        'y?' => 'super(y)',
+        'z?' => '_z' 
+    );
 
     sub z     : ro('_z');
     sub set_z : wo('_z');
