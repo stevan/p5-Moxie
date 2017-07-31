@@ -20,6 +20,11 @@ package Point {
 
     my sub _x : private;
     my sub _y : private;
+    
+    # sub new : BUILDARGS(
+    #     x => Maybe('_x'),
+    #     y => Maybe('_y'),
+    # );
 
     sub BUILDARGS : init_args(
         'x?' => '_x',
@@ -51,6 +56,12 @@ package Point3D {
     has _z => sub { 0 };
 
     my sub _z : private;
+
+    # sub new : BUILDARGS(
+    #     x => Super('x'),
+    #     y => Super('y'),
+    #     z => Maybe('z'),
+    # );
 
     sub BUILDARGS : init_args( 
         'x?' => 'super(x)',
