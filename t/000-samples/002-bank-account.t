@@ -39,9 +39,12 @@ package CheckingAccount {
 
     has '$!overdraft_account';
 
-    my sub _overdraft_account : prototype() private('$!overdraft_account');
+    my sub _overdraft_account : private('$!overdraft_account');
 
-    sub BUILDARGS : init_args( overdraft_account => '$!overdraft_account' );
+    sub BUILDARGS : init_args( 
+        'overdraft_account' => '$!overdraft_account',
+        'balance?'          => 'super(balance)',
+    );
 
     sub overdraft_account : ro('$!overdraft_account');
 
@@ -91,6 +94,30 @@ subtest '... testing the BankAccount class' => sub {
         $checking->withdraw( 200 );
         is $checking->balance, 0, '... got the checking balance we expected';
         is $savings->balance, 200, '... got the savings balance we expected';
+    };
+    
+    subtest '... testing the CheckingAccount class (with balance)' => sub {
+
+        my $checking = CheckingAccount->new(
+            overdraft_account => $savings,
+            balance           => 300,
+        );
+        isa_ok($checking, 'CheckingAccount');
+        isa_ok($checking, 'BankAccount');
+
+        is $checking->balance, 300, '... got the checking balance we expected';
+
+        $checking->deposit( 100 );
+        is $checking->balance, 400, '... got the checking balance we expected';
+        is $checking->overdraft_account, $savings, '... got the right overdraft account';
+
+        $checking->withdraw( 50 );
+        is $checking->balance, 350, '... got the checking balance we expected';
+        is $savings->balance, 200, '... got the savings balance we expected';
+
+        $checking->withdraw( 400 );
+        is $checking->balance, 0, '... got the checking balance we expected';
+        is $savings->balance, 150, '... got the savings balance we expected';
     };
 };
 
