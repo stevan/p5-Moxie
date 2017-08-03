@@ -64,9 +64,9 @@ BEGIN {
 
         has '$!amount' => sub { 0 };
 
-        sub BUILDARGS : init_args( 'amount?' => '$!amount' );
+        sub BUILDARGS : init_args( amount? => $!amount );
 
-        sub amount : ro('$!amount');
+        sub amount : ro( $!amount );
 
         sub compare ($self, $other) {
             $self->amount <=> $other->amount;
