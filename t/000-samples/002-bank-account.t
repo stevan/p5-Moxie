@@ -17,11 +17,11 @@ package BankAccount {
 
     has '$!balance' => sub { 0 };
 
-    my sub _balance : private('$!balance');
+    my sub _balance : private( $!balance );
 
-    sub BUILDARGS : init_args( balance => '$!balance' );
+    sub BUILDARGS : init_args( balance => $!balance );
 
-    sub balance : ro('$!balance');
+    sub balance : ro( $!balance );
 
     sub deposit ($self, $amount) { _balance += $amount }
 
@@ -39,14 +39,14 @@ package CheckingAccount {
 
     has '$!overdraft_account';
 
-    my sub _overdraft_account : private('$!overdraft_account');
+    my sub _overdraft_account : private( $!overdraft_account );
 
-    sub BUILDARGS : init_args( 
-        'overdraft_account' => '$!overdraft_account',
-        'balance?'          => 'super(balance)',
+    sub BUILDARGS : init_args(
+        overdraft_account => $!overdraft_account,
+        balance?          => super(balance),
     );
 
-    sub overdraft_account : ro('$!overdraft_account');
+    sub overdraft_account : ro( $!overdraft_account );
 
     sub withdraw ($self, $amount) {
 
@@ -95,7 +95,7 @@ subtest '... testing the BankAccount class' => sub {
         is $checking->balance, 0, '... got the checking balance we expected';
         is $savings->balance, 200, '... got the savings balance we expected';
     };
-    
+
     subtest '... testing the CheckingAccount class (with balance)' => sub {
 
         my $checking = CheckingAccount->new(

@@ -31,13 +31,13 @@ package BinaryTree {
     has 'left';
     has 'right';
 
-    my sub _parent : private('parent');
-    my sub _left   : private('left');
-    my sub _right  : private('right');
+    my sub _parent : private( parent );
+    my sub _left   : private( left );
+    my sub _right  : private( right );
 
     sub BUILDARGS : init_args(
-        'node?'   => 'node',
-        'parent?' => 'parent',
+        node?   => node,
+        parent? => parent,
     );
 
     sub BUILD ($self, $) { Scalar::Util::weaken( _parent ) }
