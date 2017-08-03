@@ -163,15 +163,18 @@ __END__
 
         extends 'Moxie::Object';
 
-        has 'x' => sub { 0 };
-        has 'y' => sub { 0 };
+        has _x => ( default => sub { 0 } );
+        has _y => ( default => sub { 0 } );
 
-        sub x : ro;
-        sub y : ro;
+        sub new : BUILDARGS(
+            x? => _x,
+            y? => _y,
+        );
 
-        sub clear ($self) {
-            @{$self}{'x', 'y'} = (0, 0);
-        }
+        sub x : ro( _x );
+        sub y : ro( _y );
+
+        sub clear ($self) { (_x, _y) = (0, 0) }
     }
 
     package Point3D {
@@ -179,13 +182,19 @@ __END__
 
         extends 'Point';
 
-        has 'z' => sub { 0 };
+        has _z => ( default => sub { 0 } );
 
-        sub z : ro;
+        sub new : BUILDARGS(
+            x? => super(x),
+            y? => super(y),
+            z? => _z
+        );
+
+        sub z : ro( _z );
 
         sub clear ($self) {
             $self->next::method;
-            $self->{'z'} = 0;
+            _z = 0;
         }
     }
 
