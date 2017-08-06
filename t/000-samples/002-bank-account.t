@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Test::More;
+use Test::Fatal;
 use Data::Dumper;
 
 BEGIN {
@@ -119,6 +120,35 @@ subtest '... testing the BankAccount class' => sub {
         is $checking->balance, 0, '... got the checking balance we expected';
         is $savings->balance, 150, '... got the savings balance we expected';
     };
+};
+
+subtest '... testing some error conditions' => sub {
+
+    like(
+        exception { BankAccount->new },
+        qr/Constructor for \(BankAccount\) expected 2 arguments\, got \(0\)/,
+        '... the balance argument is required'
+    );
+
+    like(
+        exception { BankAccount->new( foo => 10 ) },
+        qr/Constructor for \(BankAccount\) missing \(`balance`\) parameters\, got \(`foo`\)\, expected \(`balance`\)/,
+        '... the balance argument is required and unknown arguments are rejected'
+    );
+
+
+    like(
+        exception { CheckingAccount->new },
+        qr/Constructor for \(CheckingAccount\) expected between 2 and 4 arguments\, got \(0\)/,
+        '... the balance argument is required'
+    );
+
+    like(
+        exception { CheckingAccount->new( balance => 10 ) },
+        qr/Constructor for \(CheckingAccount\) missing \(`overdraft_account`\) parameters\, got \(`balance`\)\, expected \(`balance\?`\, `overdraft_account`\)/,
+        '... the balance argument is required'
+    );
+
 };
 
 subtest '... testing some meta-information' => sub {
