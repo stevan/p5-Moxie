@@ -25,15 +25,15 @@ sub init_args ( $meta, $method, %init_args ) : OverwritesMethod {
 
     Carp::croak('The `init_arg` trait can only be applied to BUILDARGS')
         if $method_name ne 'BUILDARGS';
-        
+
     if ( %init_args ) {
-        
+
         my @all       = sort keys %init_args;
         my @required  = grep !/\?$/, @all;
-        
+
         my $max_arity = 2 * scalar @all;
         my $min_arity = 2 * scalar @required;
-        
+
         # use Data::Dumper;
         # warn Dumper {
         #     class     => $meta->name,
@@ -42,58 +42,58 @@ sub init_args ( $meta, $method, %init_args ) : OverwritesMethod {
         #     min_arity => $min_arity,
         #     max_arity => $max_arity,
         # };
-        
+
         $meta->add_method('BUILDARGS' => sub ($self, @args) {
-            
+
             my $arity = scalar @args;
-            
-            Carp::croak('Constructor for ('.$class_name.') expected ' 
-                . (($max_arity == $min_arity) 
+
+            Carp::croak('Constructor for ('.$class_name.') expected '
+                . (($max_arity == $min_arity)
                     ? ($min_arity)
                     : ('between '.$min_arity.' and '.$max_arity))
                 . ' arguments, got ('.$arity.')')
                 if $arity < $min_arity || $arity > $max_arity;
-            
-            my $proto = $self->UNIVERSAL::Object::BUILDARGS( @args );  
-            
+
+            my $proto = $self->UNIVERSAL::Object::BUILDARGS( @args );
+
             my @missing;
             # make sure all the expected parameters exist ...
             foreach my $param ( @required ) {
                 push @missing => $param unless exists $proto->{ $param };
             }
-            
+
             Carp::croak('Constructor for ('.$class_name.') missing (`'.(join '`, `' => @missing).'`) parameters, got (`'.(join '`, `' => sort keys $proto->%*).'`), expected (`'.(join '`, `' => @all).'`)')
                 if @missing;
-            
+
             my (%final, %super);
-            
+
             # do any kind of slot assignment shuffling needed ....
             foreach my $param ( @all ) {
-                
-                my $from = $param =~ s/\?$//r; 
+
+                my $from = $param =~ s/\?$//r; #/
                 my $to   = $init_args{ $param };
-                
+
                 if ( $to =~ /^super\((.*)\)$/ ) {
                     $super{ $1 } = delete $proto->{ $from }
                          if $proto->{ $from };
                 }
                 else {
                     # now grab the slot by the correct name ...
-                    $final{ $to } = delete $proto->{ $from } 
+                    $final{ $to } = delete $proto->{ $from }
                         if $proto->{ $from };
                 }
-            }            
-            
+            }
+
             # inherit keys ...
             if ( keys %super ) {
                 my $super_proto = $self->next::method( %super );
                 %final = ( $super_proto->%*, %final );
             }
-            
+
             if ( keys $proto->%* ) {
                 Carp::croak('Constructor for ('.$class_name.') got unrecognized parameters (`'.(join '`, `' => keys $proto->%*).'`)');
-            }             
-            
+            }
+
             # use Data::Dumper;
             # warn Dumper +{
             #     proto => $proto,
@@ -106,8 +106,8 @@ sub init_args ( $meta, $method, %init_args ) : OverwritesMethod {
             #         min_arity => $min_arity,
             #         max_arity => $max_arity,
             #     }
-            # };                       
-            
+            # };
+
             return \%final;
         });
     }
@@ -115,8 +115,8 @@ sub init_args ( $meta, $method, %init_args ) : OverwritesMethod {
         $meta->add_method('BUILDARGS' => sub ($self, @args) {
             Carp::croak('Constructor for ('.$class_name.') expected 0 arguments, got ('.(scalar @args).')')
                 if @args;
-            return $self->UNIVERSAL::Object::BUILDARGS(); 
-        });        
+            return $self->UNIVERSAL::Object::BUILDARGS();
+        });
     }
 }
 
