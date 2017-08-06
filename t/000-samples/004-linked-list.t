@@ -17,7 +17,7 @@ package LinkedList {
 
     has '_head';
     has '_tail';
-    has '_count' => sub { 0 };
+    has '_count' => ( default => sub { 0 } );
 
     # private lvalue accessors
 

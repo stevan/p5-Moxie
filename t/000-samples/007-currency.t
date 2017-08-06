@@ -62,7 +62,7 @@ BEGIN {
         extends 'Moxie::Object';
            with 'Comparable', 'Printable';
 
-        has '$!amount' => sub { 0 };
+        has '$!amount' => ( default => sub { 0 } );
 
         sub BUILDARGS : init_args( amount? => $!amount );
 

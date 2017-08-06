@@ -16,7 +16,7 @@ package BankAccount {
 
     extends 'Moxie::Object';
 
-    has '$!balance' => sub { 0 };
+    has '$!balance' => ( default => sub { 0 } );
 
     my sub _balance : private( $!balance );
 

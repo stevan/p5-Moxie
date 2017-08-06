@@ -20,7 +20,7 @@ package Counter {
         '--' => 'dec',
     );
 
-    has '$!count' => sub { 0 };
+    has '$!count' => ( default => sub { 0 } );
 
     sub count : ro( $!count );
 

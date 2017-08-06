@@ -15,8 +15,8 @@ package Point {
 
     extends 'Moxie::Object';
 
-    has _x => sub { 0 };
-    has _y => sub { 0 };
+    has _x => ( default => sub { 0 } );
+    has _y => ( default => sub { 0 } );
 
     my sub _x : private;
     my sub _y : private;
@@ -26,11 +26,11 @@ package Point {
         y? => _y,
     );
 
-    sub x : ro( _x );
-    sub y : ro( _y );
+    sub x : ro(_x);
+    sub y : ro(_y);
 
-    sub set_x : wo( _x );
-    sub set_y : wo( _y );
+    sub set_x : wo(_x);
+    sub set_y : wo(_y);
 
     sub clear ($self) {
         (_x, _y) = (0, 0);
@@ -48,7 +48,7 @@ package Point3D {
 
     extends 'Point';
 
-    has _z => sub { 0 };
+    has _z => ( default => sub { 0 } );
 
     my sub _z : private;
 
