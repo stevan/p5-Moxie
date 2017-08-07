@@ -261,7 +261,7 @@ class or role during the next C<UNITCHECK> phase.
 
 This will populate the C<@DOES> variable in the current package.
 
-=item C<has $name => sub { $default_value }>
+=item C<< has $name => sub { $default_value } >>
 
 This creates a new slot in the current class or role, with
 C<$name> being the name of the slot and a subroutine which,
@@ -283,7 +283,7 @@ to supply this set of traits for use in L<Moxie> classes.
 
 =over 4
 
-=item C<init_args( arg_key => slot_name, ... )>
+=item C<< init_args( arg_key => slot_name, ... ) >>
 
 This is a trait that is exclusively applied to the C<BUILDARGS>
 method. This is simply a shortcut to generate a C<BUILDARGS> method
@@ -349,7 +349,7 @@ name of the method the trait is being applied.
     sub foo : clearer;
     sub foo : clearer('_foo');
 
-=item C<handles( $slot_name->$delegate_method )>
+=item C<< handles( $slot_name->$delegate_method ) >>
 
 This will generate a simple delegate method for a slot. The
 C<$slot_name> and C<$delegate_method>, seperated by an arrow
