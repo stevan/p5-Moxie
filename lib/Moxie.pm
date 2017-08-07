@@ -191,7 +191,7 @@ __END__
 
 =head1 DESCRIPTION
 
-L<Moxie> is a reference implemenation for an object system built
+L<Moxie> is a reference implementation for an object system built
 on top of a set of modules.
 
 =over 4
