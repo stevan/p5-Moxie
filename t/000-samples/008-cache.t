@@ -15,7 +15,7 @@ package Cache {
 
     extends 'Moxie::Object';
 
-    has '$!fetcher' => sub { die '$!fetcher is required' };
+    has '$!fetcher' => ( default => sub { die '$!fetcher is required' } );
     has '$!data';
 
     sub BUILDARGS : init_args( fetcher => $!fetcher );
