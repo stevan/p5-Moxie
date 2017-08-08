@@ -81,10 +81,16 @@ sub import_into ($class, $caller, $opts) {
 
             my $slot;
             if ( @args && (scalar @args % 2) == 0 ) {
-                $slot = Moxie::Slot->new( @args );
+                $slot = Moxie::Slot->new(
+                    meta => $meta,
+                    name => $name,
+                    @args
+                );
             }
             else {
                 $slot = Moxie::Slot->new(
+                    meta    => $meta,
+                    name    => $name,
                     default => $args[0] || eval $new_initializer
                 );
             }
