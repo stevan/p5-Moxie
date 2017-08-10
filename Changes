@@ -1,5 +1,22 @@
 Revision history for Perl extension Moxie
 
+0.03
+    - generous typo fixes from my internet friends
+        - Pierre Vigier
+        - Evan Carroll
+
+    [CHANGES]
+    - the way the BUILDARGS:init_args trait works now
+      is very different and not backwards compatible
+        - added tests in t/100-annotations/010-init-args.t
+        - docs???
+
+    - `has` now (also) takes a set of option pairs and
+       generates the correct initializer based on those
+       options
+        - tests???
+        - docs???
+
 0.02 05-07-2017
     - fixing missing dependency (PadWalker)
     - fixing some simple kwalitee issues
