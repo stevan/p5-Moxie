@@ -120,11 +120,6 @@ sub init_args ( $meta, $method, %init_args ) : OverwritesMethod {
     }
 }
 
-# TODO:
-# Add a `strict_args` provider that will do what
-# MooseX::StrictConstructor would do.
-# - SL
-
 sub ro ( $meta, $method, @args ) : OverwritesMethod {
 
     my $method_name = $method->name;
