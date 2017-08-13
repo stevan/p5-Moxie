@@ -1,4 +1,4 @@
-package Moxie::Slot;
+package Moxie::Slot::Initializer;
 # ABSTRACT: Slots in a Moxie World
 
 use v5.22;
@@ -20,8 +20,10 @@ our %HAS; BEGIN {
     %HAS = (
         meta     => sub { die 'A class/role `meta` instance is required' },
         name     => sub { die 'A slot `name` is required' },
+        # ...
         default  => sub {},
         required => sub {},
+        builder  => sub {},
         # private ...
         _initializer => sub {},
     )
@@ -58,7 +60,7 @@ sub to_code ($self, @) {
         return $self->{_initializer} ||= $self->{default};
     }
     else {
-        Carp::croak('[ERROR] Unable to transform slot object into CODE ref');
+        return $self->{_initializer} ||= eval 'package '.$meta->name.'; sub { undef }';
     }
 }
 

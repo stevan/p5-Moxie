@@ -17,7 +17,7 @@ use Method::Traits         (); # for accessor/method generators
 use MOP;
 use MOP::Internal::Util;
 
-use Moxie::Slot;
+use Moxie::Slot::Initializer;
 use Moxie::Object;
 use Moxie::Object::Immutable;
 use Moxie::Traits::Provider;
@@ -75,27 +75,32 @@ sub import_into ($class, $caller, $opts) {
 
     # import has, extend and with keyword
 
-    my $new_initializer = 'package '.$caller.'; sub { undef }';
     BEGIN::Lift::install(
         ($caller, 'has') => sub ($name, @args) {
 
-            my $slot;
+            my $initializer;
             if ( @args && (scalar @args % 2) == 0 ) {
-                $slot = Moxie::Slot->new(
+                $initializer = Moxie::Slot::Initializer->new(
                     meta => $meta,
                     name => $name,
                     @args
                 );
             }
-            else {
-                $slot = Moxie::Slot->new(
+            elsif ( @args && ref $args[0] eq 'CODE' ) {
+                $initializer = Moxie::Slot::Initializer->new(
                     meta    => $meta,
                     name    => $name,
-                    default => $args[0] || eval $new_initializer
+                    default => $args[0]
+                );
+            }
+            else {
+                $initializer = Moxie::Slot::Initializer->new(
+                    meta => $meta,
+                    name => $name
                 );
             }
 
-            $meta->add_slot( $name, $slot );
+            $meta->add_slot( $name, $initializer );
             return;
         }
     );
