@@ -9,7 +9,7 @@ Revision history for Perl extension Moxie
     - the way the BUILDARGS:init_args trait works now
       is very different and not backwards compatible
         - added tests in t/100-annotations/010-init-args.t
-        - docs???
+        - docs added to the Moxie module
 
     - `has` now (also) takes a set of option pairs and
        generates the correct initializer based on those
