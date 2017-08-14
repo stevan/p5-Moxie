@@ -13,6 +13,7 @@ use Module::Runtime        (); # load things so they DWIM
 use BEGIN::Lift            (); # fake some keywords
 use B::CompilerPhase::Hook (); # multi-phase programming
 use Method::Traits         (); # for accessor/method generators
+use B::Hooks::Parser       (); # to inject lexical sub definitions
 
 use MOP;
 use MOP::Internal::Util;
@@ -101,6 +102,9 @@ sub import_into ($class, $caller, $opts) {
             }
 
             $meta->add_slot( $name, $initializer );
+
+            B::Hooks::Parser::inject(';my sub '.$name.' : private;');
+
             return;
         }
     );
