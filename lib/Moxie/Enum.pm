@@ -11,7 +11,7 @@ use experimental qw[
 use Scalar::Util ();
 use BEGIN::Lift  ();
 
-our $VERSION   = '0.02';
+our $VERSION   = '0.03';
 our $AUTHORITY = 'cpan:STEVAN';
 
 # ...

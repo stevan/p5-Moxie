@@ -10,7 +10,7 @@ use experimental qw[
 
 use Carp ();
 
-our $VERSION   = '0.02';
+our $VERSION   = '0.03';
 our $AUTHORITY = 'cpan:STEVAN';
 
 use overload '&{}' => 'to_code', fallback => 1;
