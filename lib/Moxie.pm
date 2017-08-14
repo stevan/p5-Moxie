@@ -145,10 +145,10 @@ sub import_into ($class, $caller, $opts) {
         # pre-populate the cache for all the slots
         if ( $meta->isa('MOP::Class') ) {
             foreach my $super ( map { MOP::Role->new( name => $_ ) } $meta->mro->@* ) {
-                foreach my $attr ( $super->slots ) {
-                    $meta->alias_slot( $attr->name, $attr->initializer )
-                        unless $meta->has_slot( $attr->name )
-                            || $meta->has_slot_alias( $attr->name );
+                foreach my $slot ( $super->slots ) {
+                    $meta->alias_slot( $slot->name, $slot->initializer )
+                        unless $meta->has_slot( $slot->name )
+                            || $meta->has_slot_alias( $slot->name );
                 }
             }
         }
