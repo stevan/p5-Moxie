@@ -8,12 +8,12 @@ use experimental qw[
     postderef
 ];
 
-use experimental           (); # need this later when we load features
-use Module::Runtime        (); # load things so they DWIM
-use BEGIN::Lift            (); # fake some keywords
-use B::CompilerPhase::Hook (); # multi-phase programming
-use Method::Traits         (); # for accessor/method generators
-use B::Hooks::Parser       (); # to inject lexical sub definitions
+use experimental     (); # need this later when we load features
+use Module::Runtime  (); # load things so they DWIM
+use Devel::Hook      (); # multiphase programming
+use BEGIN::Lift      (); # fake some keywords
+use Method::Traits   (); # for accessor/method generators
+use B::Hooks::Parser (); # to inject lexical sub definitions
 
 use MOP;
 use MOP::Internal::Util;
@@ -144,7 +144,7 @@ sub import_into ($class, $caller, $opts) {
     Method::Traits->import_into( $meta, @traits );
 
     # install our class finalizer
-    B::CompilerPhase::Hook::append_UNITCHECK {
+    Devel::Hook->push_UNITCHECK_hook(sub {
 
         # pre-populate the cache for all the slots
         if ( $meta->isa('MOP::Class') ) {
@@ -173,7 +173,7 @@ sub import_into ($class, $caller, $opts) {
         # compile time.
         # - SL
 
-    };
+    });
 }
 
 1;

@@ -1,5 +1,10 @@
 Revision history for Perl extension Moxie
 
+0.04
+    [DEPENDENCIES]
+    - removed the B::CompilerPhase::Hook dependency
+      and just use straight up Devel::Hook instead
+
 0.03 2017-08-17
     [GITHUB]
     - generous typo fixes from my internet friends
