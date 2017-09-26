@@ -8,12 +8,12 @@ use experimental qw[
     postderef
 ];
 
-use experimental     (); # need this later when we load features
-use Module::Runtime  (); # load things so they DWIM
-use Devel::Hook      (); # multiphase programming
-use BEGIN::Lift      (); # fake some keywords
-use Method::Traits   (); # for accessor/method generators
-use B::Hooks::Parser (); # to inject lexical sub definitions
+use experimental    (); # need this later when we load features
+use Module::Runtime (); # load things so they DWIM
+use Devel::Hook     (); # multiphase programming
+use BEGIN::Lift     (); # fake some keywords
+use Method::Traits  (); # for accessor/method generators
+use Sub::Inject     (); # to inject lexical sub definitions
 
 use MOP;
 use MOP::Internal::Util;
@@ -23,7 +23,7 @@ use Moxie::Object;
 use Moxie::Object::Immutable;
 use Moxie::Traits::Provider;
 
-our $VERSION   = '0.03';
+our $VERSION   = '0.04';
 our $AUTHORITY = 'cpan:STEVAN';
 
 sub import ($class, %opts) {
@@ -102,6 +102,26 @@ sub import_into ($class, $caller, $opts) {
             }
 
             $meta->add_slot( $name, $initializer );
+
+            # XXX:
+            # The DB::args stuff below is fragile because it
+            # is susceptible to alteration of @_ in the
+            # method that calls these accessors. Perhaps this
+            # can be fixed with XS, but for now we are going
+            # to assume people aren't doing this since they
+            # *should* be using the signatures that we enable
+            # for them.
+            # - SL
+
+            Sub::Inject::sub_inject(
+                $name, sub : lvalue prototype() {
+                    package DB; @DB::args = ();
+                    my () = caller(1);
+                    my ($self) = @DB::args;
+                    $self->{$name};
+                }
+            );
+
             return;
         }
     );
@@ -249,11 +269,6 @@ being built.
 
 This module is used to handle the method traits which are used
 mostly for method generation (accessors, predicates, etc.).
-
-=item L<B::CompilerPhase::Hook>
-
-This allows us to better manipulate the various compiler phases
-that Perl has.
 
 =back
 

@@ -1,9 +1,18 @@
 Revision history for Perl extension Moxie
 
 0.04
+    [FEATURE CHANGES]
+    - lexical private lvalue slot accessors are now
+      always generated, no need to specify them
+      youself
+
     [DEPENDENCIES]
     - removed the B::CompilerPhase::Hook dependency
       and just use straight up Devel::Hook instead
+    - removed the PadWalker dependency because we
+      can now generate the slot accessor at BEGIN
+      time and install them with Sub::Inject
+    - added Sub::Inject dependency
 
 0.03 2017-08-17
     [GITHUB]
