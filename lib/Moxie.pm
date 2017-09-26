@@ -270,11 +270,6 @@ being built.
 This module is used to handle the method traits which are used
 mostly for method generation (accessors, predicates, etc.).
 
-=item L<B::CompilerPhase::Hook>
-
-This allows us to better manipulate the various compiler phases
-that Perl has.
-
 =back
 
 =head1 KEYWORDS
