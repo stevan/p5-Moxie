@@ -12,7 +12,7 @@ use Method::Traits ':for_providers';
 
 use Carp ();
 
-our $VERSION   = '0.03';
+our $VERSION   = '0.04';
 our $AUTHORITY = 'cpan:STEVAN';
 
 sub init_args ( $meta, $method, %init_args ) : OverwritesMethod {

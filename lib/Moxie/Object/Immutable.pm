@@ -10,7 +10,7 @@ use experimental qw[
 
 use UNIVERSAL::Object::Immutable;
 
-our $VERSION   = '0.03';
+our $VERSION   = '0.04';
 our $AUTHORITY = 'cpan:STEVAN';
 
 our @ISA; BEGIN {
