@@ -26,10 +26,10 @@ package BinaryTree {
 
     extends 'Moxie::Object';
 
-    has '_node';
-    has '_parent';
-    has '_left';
-    has '_right';
+    has _node   => ();
+    has _parent => ();
+    has _left   => ();
+    has _right  => ();
 
     sub BUILDARGS : init_args(
         node?   => _node,
