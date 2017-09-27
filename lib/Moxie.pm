@@ -485,35 +485,6 @@ C<$slot_name> is an object, or that it responds to the
 C<$delegate_method> specified, this is the responsibility of
 the writer of the class.
 
-=item C<private( ?$slot_name )>
-
-This will generate a private read-write accessor for a slot. The
-C<$slot_name> can optionally be specified, otherwise it will use the
-name of the method that the trait is being applied to.
-
-    my sub foo : private;
-    my sub foo : private(_foo);
-
-The privacy is accomplished via the use of a lexical method, this means
-that the method is not availble outside of the package scope and is
-not available to participate in method dispatch, however it does
-know the current invocant, so there is no need to pass that in. This
-results in code that looks like this:
-
-    sub my_method ($self, @stuff) {
-        # simple access ...
-        my $foo = foo();
-
-        # passing to other methods ...
-        $self->do_something_with_foo( foo() );
-
-        # calling methods on an embedded object ...
-        foo()->call_method_on_foo();
-    }
-
-This feature is considered experimental, but then again, so is this
-whole module, so I guess you can safely ignore that then.
-
 =back
 
 =head1 FEATURES ENABLED
