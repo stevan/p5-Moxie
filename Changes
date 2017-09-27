@@ -2,6 +2,8 @@ Revision history for Perl extension Moxie
 
 0.04
     [FEATURE CHANGES]
+    - moved the Moxie::Slot::Intitializer class to
+      the MOP instead of here
     - lexical private lvalue slot accessors are now
       always generated, no need to specify them
       youself
@@ -13,6 +15,8 @@ Revision history for Perl extension Moxie
       can now generate the slot accessor at BEGIN
       time and install them with Sub::Inject
     - added Sub::Inject dependency
+    - bump the MOP dependency to support use of the
+      MOP::Slot::Initializer class
 
 0.03 2017-08-17
     [GITHUB]
