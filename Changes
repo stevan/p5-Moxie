@@ -1,6 +1,6 @@
 Revision history for Perl extension Moxie
 
-0.04
+0.04 2017-09-27
     [FEATURE CHANGES]
     - moved the Moxie::Slot::Intitializer class to
       the MOP instead of here
