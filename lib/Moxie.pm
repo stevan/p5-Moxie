@@ -18,7 +18,6 @@ use Sub::Inject     (); # to inject lexical sub definitions
 use MOP;
 use MOP::Internal::Util;
 
-use Moxie::Slot::Initializer;
 use Moxie::Object;
 use Moxie::Object::Immutable;
 use Moxie::Traits::Provider;
@@ -81,21 +80,21 @@ sub import_into ($class, $caller, $opts) {
 
             my $initializer;
             if ( @args && (scalar @args % 2) == 0 ) {
-                $initializer = Moxie::Slot::Initializer->new(
+                $initializer = MOP::Slot::Initializer->new(
                     meta => $meta,
                     name => $name,
                     @args
                 );
             }
             elsif ( @args && ref $args[0] eq 'CODE' ) {
-                $initializer = Moxie::Slot::Initializer->new(
+                $initializer = MOP::Slot::Initializer->new(
                     meta    => $meta,
                     name    => $name,
                     default => $args[0]
                 );
             }
             else {
-                $initializer = Moxie::Slot::Initializer->new(
+                $initializer = MOP::Slot::Initializer->new(
                     meta => $meta,
                     name => $name
                 );
