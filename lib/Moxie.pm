@@ -78,29 +78,22 @@ sub import_into ($class, $caller, $opts) {
     BEGIN::Lift::install(
         ($caller, 'has') => sub ($name, @args) {
 
-            my $initializer;
-            if ( @args && (scalar @args % 2) == 0 ) {
-                $initializer = MOP::Slot::Initializer->new(
-                    meta => $meta,
-                    name => $name,
-                    @args
-                );
-            }
-            elsif ( @args && ref $args[0] eq 'CODE' ) {
-                $initializer = MOP::Slot::Initializer->new(
-                    meta    => $meta,
-                    name    => $name,
-                    default => $args[0]
-                );
-            }
-            else {
-                $initializer = MOP::Slot::Initializer->new(
-                    meta => $meta,
-                    name => $name
-                );
-            }
+            # NOTE:
+            # Handle the simple case of `has $name => $code`
+            # by converting it into the more complex
+            # `has $name => %opts` version, just easier
+            # to maintain internal consistency.
+            # - SL
 
-            $meta->add_slot( $name, $initializer );
+            @args = ( default => $args[0] )
+                if scalar @args == 1
+                && ref $args[0] eq 'CODE';
+
+            my $initializer = MOP::Slot::Initializer->new(
+                meta => $meta,
+                name => $name,
+                @args
+            );
 
             # XXX:
             # The DB::args stuff below is fragile because it
@@ -121,6 +114,7 @@ sub import_into ($class, $caller, $opts) {
                 }
             );
 
+            $meta->add_slot( $name, $initializer );
             return;
         }
     );
