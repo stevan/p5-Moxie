@@ -202,7 +202,7 @@ __END__
         has _x => ( default => sub { 0 } );
         has _y => ( default => sub { 0 } );
 
-        sub new : BUILDARGS(
+        sub BUILDARGS : init_args(
             x? => _x,
             y? => _y,
         );
@@ -220,7 +220,7 @@ __END__
 
         has _z => ( default => sub { 0 } );
 
-        sub new : BUILDARGS(
+        sub BUILDARGS : init_args(
             x? => super(x),
             y? => super(y),
             z? => _z
