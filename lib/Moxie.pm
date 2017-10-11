@@ -90,8 +90,7 @@ sub import_into ($class, $caller, $opts) {
                 && ref $args[0] eq 'CODE';
 
             my $initializer = MOP::Slot::Initializer->new(
-                meta => $meta,
-                name => $name,
+                within_package => $meta->name,
                 @args
             );
 
