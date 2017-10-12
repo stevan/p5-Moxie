@@ -16,7 +16,7 @@ use Method::Traits  (); # for accessor/method generators
 use Sub::Inject     (); # to inject lexical sub definitions
 
 use MOP;
-use MOP::Internal::Util;
+use MOP::Util;
 
 use Moxie::Object;
 use Moxie::Object::Immutable;
@@ -157,19 +157,13 @@ sub import_into ($class, $caller, $opts) {
 
         # pre-populate the cache for all the slots
         if ( $meta->isa('MOP::Class') ) {
-            foreach my $super ( map { MOP::Role->new( name => $_ ) } $meta->mro->@* ) {
-                foreach my $slot ( $super->slots ) {
-                    $meta->alias_slot( $slot->name, $slot->initializer )
-                        unless $meta->has_slot( $slot->name )
-                            || $meta->has_slot_alias( $slot->name );
-                }
-            }
+            MOP::Util::INHERIT_SLOTS( $meta );
         }
 
         # apply roles ...
         if ( my @does = $meta->roles ) {
             #warn sprintf "Applying roles(%s) to class/role(%s)" => (join ', ' => @does), $meta->name;
-            MOP::Internal::Util::APPLY_ROLES(
+            MOP::Util::APPLY_ROLES(
                 $meta,
                 \@does,
                 to => ($meta->isa('MOP::Class') ? 'class' : 'role')
