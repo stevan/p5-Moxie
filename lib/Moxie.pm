@@ -157,13 +157,13 @@ sub import_into ($class, $caller, $opts) {
 
         # pre-populate the cache for all the slots
         if ( $meta->isa('MOP::Class') ) {
-            MOP::Util::INHERIT_SLOTS( $meta );
+            MOP::Util::inherit_slots( $meta );
         }
 
         # apply roles ...
         if ( my @does = $meta->roles ) {
             #warn sprintf "Applying roles(%s) to class/role(%s)" => (join ', ' => @does), $meta->name;
-            MOP::Util::APPLY_ROLES(
+            MOP::Util::compose_roles(
                 $meta,
                 \@does,
                 to => ($meta->isa('MOP::Class') ? 'class' : 'role')
