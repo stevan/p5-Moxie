@@ -250,6 +250,43 @@ sub clearer ( $meta, $method, @args ) : OverwritesMethod {
     $meta->add_method( $method_name => sub { undef $_[0]->{ $slot_name } } );
 }
 
+sub lazy ( $meta, $method, @args ) : OverwritesMethod {
+
+    my $method_name = $method->name;
+
+    my $slot_name;
+    if ( $args[0] ) {
+        $slot_name = shift @args;
+    }
+    else {
+        if ( $method_name =~ /^build_(.*)$/ ) {
+            $slot_name = $1;
+        }
+        else {
+            $slot_name = $method_name;
+        }
+    }
+
+    Carp::croak('Unable to build `lazy` accessor for slot `' . $slot_name.'` in `'.$meta->name.'` because class is immutable.')
+        if ($meta->name)->isa('Moxie::Object::Immutable');
+
+    Carp::croak('Unable to build `lazy` accessor for slot `' . $slot_name.'` in `'.$meta->name.'` because the slot cannot be found.')
+        unless $meta->has_slot( $slot_name )
+            || $meta->has_slot_alias( $slot_name );
+
+
+    # NOTE:
+    # lazy is read-only by design, if you want
+    # a rw+lazy, write it yourself
+    # - SL
+
+    my $orig = $meta->get_method( $method_name )->body;
+
+    $meta->add_method( $method_name => sub {
+        $_[0]->{ $slot_name } //= $orig->( @_ );
+    });
+}
+
 sub handles ( $meta, $method, @args ) : OverwritesMethod {
 
     my $method_name = $method->name;
