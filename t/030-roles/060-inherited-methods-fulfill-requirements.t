@@ -15,8 +15,6 @@ package Role::Table {
 package Role::Table::RO {
     use Moxie;
 
-    with 'Role::Table';
-
     sub count;
     sub select;
 }
@@ -34,7 +32,8 @@ package Table::RO {
     use Moxie;
 
     extends 'Table';
-       with 'Role::Table::RO';
+       with 'Role::Table',
+            'Role::Table::RO';
 
     sub count  { 'Table::RO::count' }
     sub select { 'Table::RO::select' }
@@ -42,5 +41,13 @@ package Table::RO {
 
 my $t = Table::RO->new;
 isa_ok($t, 'Table::RO');
+
+can_ok($t, 'count');
+can_ok($t, 'select');
+can_ok($t, 'query_by_id');
+
+is($t->count,       'Table::RO::count', '... got the expected values');
+is($t->select,      'Table::RO::select', '... got the expected values');
+is($t->query_by_id, 'Table::query_by_id', '... got the expected values');
 
 done_testing;
