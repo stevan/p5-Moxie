@@ -15,6 +15,10 @@ package Role::Table {
 package Role::Table::RO {
     use Moxie;
 
+    with 'Role::Table';
+
+    sub query_by_id; # continue to defer this ...
+
     sub count;
     sub select;
 }
@@ -32,8 +36,7 @@ package Table::RO {
     use Moxie;
 
     extends 'Table';
-       with 'Role::Table',
-            'Role::Table::RO';
+       with 'Role::Table::RO';
 
     sub count  { 'Table::RO::count' }
     sub select { 'Table::RO::select' }
