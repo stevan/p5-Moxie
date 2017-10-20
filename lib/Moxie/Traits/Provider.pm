@@ -10,10 +10,10 @@ use experimental qw[
 
 use Method::Traits ':for_providers';
 
-use Carp                   ();
-use B::CompilerPhase::Hook (); # multi-phase programming
-use Sub::Util              ();
-use PadWalker              (); # for generating lexical accessors
+use Carp      ();
+use Sub::Util (); # for setting the prototype of the lexical accessors
+use PadWalker (); # for generating lexical accessors
+use MOP::Util ();
 
 our $VERSION   = '0.04';
 our $AUTHORITY = 'cpan:STEVAN';
@@ -349,7 +349,7 @@ sub private ( $meta, $method, @args ) {
         # we need to delay this until the UNITCHECK phase
         # because we need all the methods of this class to
         # have been compiled, at this moment, they are not.
-        B::CompilerPhase::Hook::enqueue_UNITCHECK {
+        MOP::Util::defer_until_UNITCHECK(sub {
 
             # now see if this class is immutable or not, it will
             # determine the type of accessor we generate ...
@@ -422,7 +422,7 @@ sub private ( $meta, $method, @args ) {
                     PadWalker::set_closed_over( $m->body, $closed_over );
                 }
             }
-        };
+        });
     }
 
 }

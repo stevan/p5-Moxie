@@ -31,6 +31,8 @@ package BinaryTree {
     has _left   => ();
     has _right  => ();
 
+    my sub _parent : private;
+
     sub BUILDARGS : init_args(
         node?   => _node,
         parent? => _parent,

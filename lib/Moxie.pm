@@ -10,10 +10,8 @@ use experimental qw[
 
 use experimental    (); # need this later when we load features
 use Module::Runtime (); # load things so they DWIM
-use Devel::Hook     (); # multiphase programming
 use BEGIN::Lift     (); # fake some keywords
 use Method::Traits  (); # for accessor/method generators
-use Sub::Inject     (); # to inject lexical sub definitions
 
 use MOP;
 use MOP::Util;
@@ -92,25 +90,6 @@ sub import_into ($class, $caller, $opts) {
             my $initializer = MOP::Slot::Initializer->new(
                 within_package => $meta->name,
                 @args
-            );
-
-            # XXX:
-            # The DB::args stuff below is fragile because it
-            # is susceptible to alteration of @_ in the
-            # method that calls these accessors. Perhaps this
-            # can be fixed with XS, but for now we are going
-            # to assume people aren't doing this since they
-            # *should* be using the signatures that we enable
-            # for them.
-            # - SL
-
-            Sub::Inject::sub_inject(
-                $name, sub : lvalue prototype() {
-                    package DB; @DB::args = ();
-                    my () = caller(1);
-                    my ($self) = @DB::args;
-                    $self->{$name};
-                }
             );
 
             $meta->add_slot( $name, $initializer );
