@@ -78,7 +78,7 @@ BEGIN {
     ];
     like(
         "$@",
-        qr/^\[CONFLICT\] There should be no conflicting methods when composing \(Foo, Bar\) into the class \(FooBarBrokenClass1\) but instead we found \(foo\)/,
+        qr/^\[CONFLICT\] There should be no conflicting methods when composing \(Foo, Bar\) into the \(FooBarBrokenClass1\) but instead we found \(foo\)/,
         '... got the exception we expected'
     );
 }

@@ -153,22 +153,13 @@ sub import_into ($class, $caller, $opts) {
     Method::Traits->import_into( $meta, @traits );
 
     # install our class finalizer
-    Devel::Hook->push_UNITCHECK_hook(sub {
+    MOP::Util::defer_until_UNITCHECK(sub {
 
-        # pre-populate the cache for all the slots
-        if ( $meta->isa('MOP::Class') ) {
-            MOP::Util::inherit_slots( $meta );
-        }
+        # pre-populate the cache for all the slots (if it is a class)
+        MOP::Util::inherit_slots( $meta );
 
         # apply roles ...
-        if ( my @does = $meta->roles ) {
-            #warn sprintf "Applying roles(%s) to class/role(%s)" => (join ', ' => @does), $meta->name;
-            MOP::Util::compose_roles(
-                $meta,
-                \@does,
-                to => ($meta->isa('MOP::Class') ? 'class' : 'role')
-            );
-        }
+        MOP::Util::compose_roles( $meta );
 
         # TODO:
         # Consider locking the %HAS hash now, this will
