@@ -465,13 +465,13 @@ results in code that looks like this:
 
     sub my_method ($self, @stuff) {
         # simple access ...
-        my $foo = foo();
+        my $foo = foo;
 
         # passing to other methods ...
-        $self->do_something_with_foo( foo() );
+        $self->do_something_with_foo( foo );
 
         # calling methods on an embedded object ...
-        foo()->call_method_on_foo();
+        foo->call_method_on_foo();
     }
 
 This feature is considered experimental, but then again, so is this
