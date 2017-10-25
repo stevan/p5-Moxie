@@ -78,9 +78,20 @@ sub init_args ( $meta, $method, %init_args ) : OverwritesMethod {
                          if $proto->{ $from };
                 }
                 else {
-                    # now grab the slot by the correct name ...
-                    $final{ $to } = delete $proto->{ $from }
-                        if $proto->{ $from };
+                    if ( exists $proto->{ $from } ) {
+
+                        #use Data::Dumper;
+                        #warn "BEFORE:", Dumper $proto;
+
+                        # now grab the slot by the correct name ...
+                        $final{ $to } = delete $proto->{ $from };
+
+                        #warn "AFTER:", Dumper $proto;
+                    }
+                    #else {
+                        #use Data::Dumper;
+                        #warn "NOT FOUND ($from) :", Dumper $proto;
+                    #}
                 }
             }
 
