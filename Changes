@@ -1,5 +1,8 @@
 Revision history for Perl extension Moxie
 
+0.06
+    - fixing a bug caught by CPAN testers
+
 0.05 2017-10-21
     [FEATURE CHANGES]
     - restored the `private` trait and ceased it being
