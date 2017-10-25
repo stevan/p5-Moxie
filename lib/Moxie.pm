@@ -129,7 +129,7 @@ sub import_into ($class, $caller, $opts) {
     push @traits => $opts->{'traits'}->@* if exists $opts->{'traits'};
 
     # then schedule the trait collection ...
-    Method::Traits->import_into( $meta, @traits );
+    Method::Traits->import_into( $meta->name, @traits );
 
     # install our class finalizer
     MOP::Util::defer_until_UNITCHECK(sub {
