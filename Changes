@@ -1,7 +1,13 @@
 Revision history for Perl extension Moxie
 
 0.06
+    - updated SYNOPSIS to be sleaker
     - fixing a bug caught by CPAN testers
+    - switched back to Carp::confess from Carp::cluck, the
+      stack trace is vital until this module matures and
+      the error messages improve
+    - fixed a bug in the `init_args` trait that caused
+      slot => 0 to not work
 
 0.05 2017-10-21
     [FEATURE CHANGES]
