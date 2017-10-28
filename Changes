@@ -1,6 +1,9 @@
 Revision history for Perl extension Moxie
 
 0.06
+    [FEATURE CHANGES]
+    - Changed the name of BUILDARGS:init_arg to BUILDARGS:init
+      as the ARGS/args was redundant
     - updated SYNOPSIS to be sleaker
     - fixing a bug caught by CPAN testers
     - switched back to Carp::confess from Carp::cluck, the
