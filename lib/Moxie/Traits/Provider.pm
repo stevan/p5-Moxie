@@ -20,6 +20,17 @@ our $AUTHORITY = 'cpan:STEVAN';
 
 sub init ( $meta, $method, %init_args ) : OverwritesMethod {
 
+    # XXX:
+    # Consider perhaps supporting something
+    # like the Perl 6 signature format here,
+    # which would give us a more sophisticated
+    # way to specify the constructor API
+    #
+    # The way MAIN is handled is good inspiration maybe ...
+    # http://perl6maven.com/parsing-command-line-arguments-perl6
+    #
+    # - SL
+
     my $class_name  = $meta->name;
     my $method_name = $method->name;
 
