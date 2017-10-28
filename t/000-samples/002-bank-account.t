@@ -20,7 +20,7 @@ package BankAccount {
 
     my sub _balance : private;
 
-    sub BUILDARGS : init_args(
+    sub BUILDARGS : init(
         balance => _balance
     );
 
@@ -44,7 +44,7 @@ package CheckingAccount {
 
     my sub _overdraft_account : private;
 
-    sub BUILDARGS : init_args(
+    sub BUILDARGS : init(
         overdraft_account => _overdraft_account,
         balance?          => super(balance),
     );

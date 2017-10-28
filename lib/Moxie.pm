@@ -286,7 +286,7 @@ safety or certainty you get from quoting slot names in trait arguments.
 
 =over 4
 
-=item C<< init_args( arg_key => slot_name, ... ) >>
+=item C<< init( arg_key => slot_name, ... ) >>
 
 This is a trait that is exclusively applied to the C<BUILDARGS>
 method. This is simply a shortcut to generate a C<BUILDARGS> method

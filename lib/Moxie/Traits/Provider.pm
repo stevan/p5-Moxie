@@ -18,7 +18,7 @@ use MOP::Util ();
 our $VERSION   = '0.06';
 our $AUTHORITY = 'cpan:STEVAN';
 
-sub init_args ( $meta, $method, %init_args ) : OverwritesMethod {
+sub init ( $meta, $method, %init_args ) : OverwritesMethod {
 
     my $class_name  = $meta->name;
     my $method_name = $method->name;

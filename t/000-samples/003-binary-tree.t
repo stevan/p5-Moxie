@@ -33,7 +33,7 @@ package BinaryTree {
 
     my sub _parent : private;
 
-    sub BUILDARGS : init_args(
+    sub BUILDARGS : init(
         node?   => _node,
         parent? => _parent,
     );
