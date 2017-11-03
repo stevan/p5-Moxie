@@ -87,9 +87,24 @@ sub import_into ($class, $caller, $opts) {
                 if scalar @args == 1
                 && ref $args[0] eq 'CODE';
 
+            my %args = @args;
+
+            # NOTE:
+            # handle the simple case of `required => 1`
+            # by providing this default error message
+            # with the name embedded. This has to be done
+            # here because the Initializer object does
+            # not know the name (nor does it need to)
+            # - SL
+
+            # TODO - i18n the error message
+            $args{required} = 'A value for `'.$name.'` is required'
+                if exists $args{required}
+                && $args{required} =~ /^1$/;
+
             my $initializer = MOP::Slot::Initializer->new(
                 within_package => $meta->name,
-                @args
+                %args
             );
 
             $meta->add_slot( $name, $initializer );

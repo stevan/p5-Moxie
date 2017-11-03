@@ -44,18 +44,17 @@ package CheckingAccount {
 
     extends 'BankAccount';
 
-    has _overdraft_account => ();
+    has _overdraft_account => ( required => 1 );
 
     my sub _overdraft_account : private;
 
     sub BUILDARGS : init(
-        name               => super(name),
-        balance?           => super(balance),
-        overdraft_account? => _overdraft_account,
+        name              => super(name),
+        balance?          => super(balance),
+        overdraft_account => _overdraft_account,
     );
 
     sub overdraft_account         : ro(_overdraft_account);
-    sub has_overdraft_account     : predicate(_overdraft_account);
     sub available_overdraft_funds : handles(_overdraft_account->balance);
 
     sub withdraw ($self, $amount) {
@@ -93,8 +92,6 @@ subtest '... testing the BankAccount class' => sub {
         isa_ok($checking, 'CheckingAccount');
         isa_ok($checking, 'BankAccount');
 
-        ok $checking->has_overdraft_account, '... we have an overdraft account';
-
         is $checking->available_overdraft_funds, $savings->balance, '... we have the expected overdraft balance';
 
         is $checking->name, 'S. Little', '... got the name we expected';
@@ -123,8 +120,6 @@ subtest '... testing the BankAccount class' => sub {
         isa_ok($checking, 'CheckingAccount');
         isa_ok($checking, 'BankAccount');
 
-        ok $checking->has_overdraft_account, '... we have an overdraft account';
-
         is $checking->available_overdraft_funds, $savings->balance, '... we have the expected overdraft balance';
 
         is $checking->name, 'S. Little', '... got the name we expected';
@@ -143,17 +138,6 @@ subtest '... testing the BankAccount class' => sub {
         is $savings->balance, 150, '... got the savings balance we expected';
     };
 
-    subtest '... testing the CheckingAccount class' => sub {
-
-        my $checking = CheckingAccount->new( name => 'S. Little' );
-        isa_ok($checking, 'CheckingAccount');
-        isa_ok($checking, 'BankAccount');
-
-        ok !$checking->has_overdraft_account, '... we have an overdraft account';
-
-        is $checking->name, 'S. Little', '... got the name we expected';
-        is $checking->balance, 0, '... got the checking balance we expected';
-    };
 };
 
 subtest '... testing some error conditions' => sub {
@@ -173,13 +157,19 @@ subtest '... testing some error conditions' => sub {
 
     like(
         exception { CheckingAccount->new },
-        qr/Constructor for \(CheckingAccount\) expected between 2 and 6 arguments\, got \(0\)/,
+        qr/Constructor for \(CheckingAccount\) expected between 4 and 6 arguments\, got \(0\)/,
         '... the balance argument is required'
     );
 
     like(
         exception { CheckingAccount->new( balance => 10 ) },
-        qr/Constructor for \(CheckingAccount\) missing \(`name`\) parameters\, got \(`balance`\)\, expected \(`balance\?`\, `name`\, `overdraft_account\?`\)/,
+        qr/Constructor for \(CheckingAccount\) expected between 4 and 6 arguments\, got \(2\)/,
+        '... the balance argument is required'
+    );
+
+    like(
+        exception { CheckingAccount->new( name => 'Test', balance => 10 ) },
+        qr/Constructor for \(CheckingAccount\) missing \(`overdraft_account`\) parameters\, got \(`balance`\, `name`\)\, expected \(`balance\?`\, `name`\, `overdraft_account`\)/,
         '... the balance argument is required'
     );
 
