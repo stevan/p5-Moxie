@@ -14,7 +14,7 @@ package Foo {
     has _foo => ( default => sub { 'DFOO' } );
     has _bar => ( required => 1 );
 
-    sub BUILDARGS : init(
+    sub BUILDARGS : strict(
         foo? => _foo,
         bar? => _bar,
     );

@@ -23,7 +23,7 @@ package Bar {
 
     has _foo => sub { Foo->new };
 
-    sub BUILDARGS : init( foo? => _foo );
+    sub BUILDARGS : strict( foo? => _foo );
 
     sub foo    : ro(_foo);
     sub foobar : handles('_foo->bar');

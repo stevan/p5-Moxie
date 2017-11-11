@@ -37,6 +37,7 @@ sub import ($class, %opts) {
 }
 
 sub import_into ($class, $caller, $opts) {
+
     # NOTE:
     # create the meta-object, we start
     # with this as a role, but it will
@@ -138,10 +139,19 @@ sub import_into ($class, $caller, $opts) {
         }
     );
 
-    # setup the base traits, and
-    my @traits = ('Moxie::Traits::Provider');
+    # setup the base traits,
+    my @traits = Moxie::Traits::Provider::list_providers();
     # and anything we were asked to load ...
-    push @traits => $opts->{'traits'}->@* if exists $opts->{'traits'};
+    if ( exists $opts->{'traits'} ) {
+        foreach my $trait ( $opts->{'traits'}->@* ) {
+            if ( $trait eq ':experimental' ) {
+                push @traits => Moxie::Traits::Provider::list_experimental_providers();;
+            }
+            else {
+                push @traits => $trait;
+            }
+        }
+    }
 
     # then schedule the trait collection ...
     Method::Traits->import_into( $meta->name, @traits );
@@ -290,6 +300,14 @@ this is done when C<use>ing L<Moxie> like this:
 By default L<Moxie> will enable the L<Moxie::Traits::Provider> module
 to supply this set of traits for use in L<Moxie> classes.
 
+Some traits below are listed as experimental, in order to enable those
+traits the string C<:experimental> (with the leading colon) must appear
+in your traits list.
+
+    use Moxie traits => [ ':experimental' ];
+    # or
+    use Moxie traits => [ 'My::Trait::Provider', ..., ':experimental' ];
+
 =head3 B<A word about slot names and method trait syntax>
 
 The way C<perl> parses C<CODE> attributes is that everything within the
@@ -299,21 +317,23 @@ and all examples (eventually) will confrom to this syntax. This is a matter
 of choice, do as you prefer, but I promise you there is no additional
 safety or certainty you get from quoting slot names in trait arguments.
 
+=head2 CONSTRUCTOR TRAITS
+
 =over 4
 
-=item C<< init( arg_key => slot_name, ... ) >>
+=item C<< strict( arg_key => slot_name, ... ) >>
 
 This is a trait that is exclusively applied to the C<BUILDARGS>
-method. This is simply a shortcut to generate a C<BUILDARGS> method
-that can map a given constructor parameter to a given slot, this
-is useful for maintaining encapsulation for things like a private
-slot with a different public name.
+method. This is a means for generating a strict interface for the
+C<BUILDARGS> method that will map a set of constructor parameters
+to a set of given slots, this is useful for maintaining encapsulation
+for things like a private slot with a different public name.
 
     # declare a slot with a private name
     has _bar => sub {};
 
     # map the `foo` key to the `_bar` slot
-    sub BUILDARGS : init_arg( foo => _bar );
+    sub BUILDARGS : strict( foo => _bar );
 
 All other parameters will be rejected and an exception thrown. If
 you wish to have an optional parameter, simply follow the parameter
@@ -324,7 +344,7 @@ name with a question mark, like so:
 
     # the `foo` key is optional, but if
     # given, will store in the `_bar` slot
-    sub BUILDARGS : init_arg( foo? => _bar );
+    sub BUILDARGS : strict( foo? => _bar );
 
 If you wish to accept parameters for your superclass's constructor
 but do not want to specify storage location because of encapsulation
@@ -333,7 +353,7 @@ concerns, simply use the C<super> designator, like so:
 
     # map the `foo` key to the local `_bar` slot
     # with the `bar` key, let the superclass decide ...
-    sub BUILDARGS : init_arg(
+    sub BUILDARGS : strict(
         foo => _bar,
         bar => super(bar)
     );
@@ -341,10 +361,14 @@ concerns, simply use the C<super> designator, like so:
 If you wish to have a constructor that accepts no parameters at
 all, then simply do this.
 
-    sub BUILDARGS : init_arg;
+    sub BUILDARGS : strict;
 
 And the constructor will throw an exception if any arguments at
 all are passed in.
+
+=head2 ACCESSOR TRAITS
+
+=over 4
 
 =item C<ro( ?$slot_name )>
 
@@ -441,6 +465,12 @@ Is the equivalent of writing this:
 
     sub clear_foo : ro(foo);
 
+=back
+
+=head2 DELEGATION TRAITS
+
+=over 4
+
 =item C<< handles( $slot_name->$delegate_method ) >>
 
 This will generate a simple delegate method for a slot. The
@@ -453,6 +483,27 @@ No attempt will be made to verify that the value stored in
 C<$slot_name> is an object, or that it responds to the
 C<$delegate_method> specified, this is the responsibility of
 the writer of the class.
+
+=back
+
+=head2 EXPERIMENTAL TRAITS
+
+In order to enable these traits, you must pass the C<experimental>
+flag for L<Moxie>.
+
+=over 4
+
+=item C<lazy( ?$slot_name ) { ... }>
+
+This will transform the associated subroutine into a lazy read-only
+accessor for a slot. The body of the subroutine is expected to be
+the initializer for the slot and will receive the instance as it's
+first arguemnt. The C<$slot_name> can optionally be specified,
+otherwise it will use the name of the method that the trait is being
+applied to.
+
+    sub foo : lazy { ... }
+    sub foo : lazy(_foo) { ... }
 
 =item C<private( ?$slot_name )>
 
@@ -480,9 +531,6 @@ results in code that looks like this:
         foo->call_method_on_foo();
     }
 
-This feature is considered experimental, but then again, so is this
-whole module, so I guess you can safely ignore that then.
-
 =back
 
 =head1 FEATURES ENABLED
@@ -508,6 +556,8 @@ module for more information.
 =item C<state>
 
 =item C<refaliasing>
+
+=item C<declared_refs>
 
 =back
 

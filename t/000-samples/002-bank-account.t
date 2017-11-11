@@ -12,7 +12,8 @@ BEGIN {
 }
 
 package BankAccount {
-    use Moxie;
+    use Moxie
+        traits => [':experimental'];
 
     extends 'Moxie::Object';
 
@@ -22,7 +23,7 @@ package BankAccount {
 
     my sub _balance : private;
 
-    sub BUILDARGS : init(
+    sub BUILDARGS : strict(
         name     => name,
         balance? => _balance,
     );
@@ -40,7 +41,8 @@ package BankAccount {
 }
 
 package CheckingAccount {
-    use Moxie;
+    use Moxie
+        traits => [':experimental'];
 
     extends 'BankAccount';
 
@@ -48,7 +50,7 @@ package CheckingAccount {
 
     my sub _overdraft_account : private;
 
-    sub BUILDARGS : init(
+    sub BUILDARGS : strict(
         name              => super(name),
         balance?          => super(balance),
         overdraft_account => _overdraft_account,

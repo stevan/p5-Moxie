@@ -5,6 +5,15 @@ Revision history for Perl extension Moxie
     - it is now posible to say `required => 1` and have that
       expand to a default error message
 
+    [FEATURE CHANGES]
+    - renamed the `init_args` trait to `strict` and changed
+      the docs to explain its purpose better
+    - Trait::Provider modules have been re-arranged, we now have
+      a classification for experimental features
+        - added `lazy` and `private` as two features which
+          now require you to pass the `:experimental` tag
+          within the `traits` listing.
+
 0.06 2017-10-30
     [FEATURE CHANGES]
     - Changed the name of BUILDARGS:init_arg to BUILDARGS:init
