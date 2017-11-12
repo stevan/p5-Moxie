@@ -215,34 +215,61 @@ __END__
 
 =head1 DESCRIPTION
 
-L<Moxie> is a reference implementation for an object system built
-on top of a set of modules.
+L<Moxie> is a new object system for Perl 5 that aims to be a
+successor to the L<Moose> module. The goal is to provide the same
+key features of L<Moose>; syntactic sugar, common base class, slot
+management, role composition, accessor generation and a meta-object
+protocol – but to do it in a more straightforward and resource
+efficient way that requires lower cognative overhead.
 
-=over 4
+The key tenents of L<Moxie> are as follows:
 
-=item L<UNIVERSAL::Object>
+=head2 Aims to be ultra-modern
 
-This is the suggested base class (through L<Moxie::Object>) for
-all L<Moxie> classes.
+L<Moose> was a post-modern object system, so what is after post
+modernism? Post, post modernism? Who knows, it is 2017 and instead
+of flying cars we are careening towards a dystopian timeline and
+a future that none of us can forsee. So given that, B<ultra> seemed
+to work as well as anything else.
 
-=item L<MOP>
+This tenent means that we will not shy away from new Perl features
+and we have core a commitment to helping to push the language forward.
 
-This provides an API to Classes, Roles, Methods and Slots, which
-is used by many elements within this module.
+=head2 Better distinction between public & private
 
-=item L<BEGIN::Lift>
+The clean sepeartion of the public and private interfaces of your
+class is key to maintaining good encapsulation. This is one of the key
+features required for writing robust and reusable software that can
+resist the abuses of fellow programmers and still retain it's
+usefulness over time.
 
-This module is used to create three new keywords; C<extends>,
-C<with> and C<has>. These keywords are executed during compile
-time and just make calls to the L<MOP> to affect the class
-being built.
+=head2 Re-use existing Perl features
 
-=item L<Method::Traits>
+Perl is a large language with many features, some of which are useful
+and some – I believe – people just haven't found a good use for I<yet>.
+L<Moxie> aims to use as many existing B<native> features in Perl when
+possible. This can be seen as just another facet of the commitment to
+modernity mentioned above, ... it is not old, it is B<retro>!
 
-This module is used to handle the method traits which are used
-mostly for method generation (accessors, predicates, etc.).
+=head2 Reduce cognative burdon of the MOP
 
-=back
+The Meta-Object protocol that powered all the L<Moose> features was
+large, complex and difficult to understand unless you were willing to
+put in the cognative investment. Because the MOP was the primary means
+of extension for L<Moose>, this meant it was not optional if you wanted
+to extend L<Moose>. L<Moxie> instead turns the tables, such that it has
+multiple means of extension, most (but not all) of which are empowered
+by the L<MOP>. This means that an understanding of the L<MOP> is no
+longer required to extend L<Moxie>, but when needed the full power of
+a L<MOP> is available.
+
+=head2 Better resource usage
+
+L<Moose> is famous for it's high startup overhead and heavy memory
+usage. These were consequences of the way in which L<Moose> was
+implemented. With L<Moxie> we instead try to do the least amount of
+work possible so as to introduce the least amount of overhead.
+
 
 =head1 KEYWORDS
 
@@ -530,6 +557,37 @@ results in code that looks like this:
         # calling methods on an embedded object ...
         foo->call_method_on_foo();
     }
+
+=back
+
+=head1 USED MODULES
+
+L<Moxie> could be thought of as a reference implementation for an
+object system built on top of a set of modules (listed below).
+
+=over 4
+
+=item L<UNIVERSAL::Object>
+
+This is the suggested base class (through L<Moxie::Object>) for
+all L<Moxie> classes.
+
+=item L<MOP>
+
+This provides an API to Classes, Roles, Methods and Slots, which
+is used by many elements within this module.
+
+=item L<BEGIN::Lift>
+
+This module is used to create three new keywords; C<extends>,
+C<with> and C<has>. These keywords are executed during compile
+time and just make calls to the L<MOP> to affect the class
+being built.
+
+=item L<Method::Traits>
+
+This module is used to handle the method traits which are used
+mostly for method generation (accessors, predicates, etc.).
 
 =back
 
