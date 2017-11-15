@@ -494,29 +494,11 @@ Is the equivalent of writing this:
 
 =back
 
-=head2 DELEGATION TRAITS
-
-=over 4
-
-=item C<< handles( $slot_name->$delegate_method ) >>
-
-This will generate a simple delegate method for a slot. The
-C<$slot_name> and C<$delegate_method>, seperated by an arrow
-(C<< -> >>), must be specified or an exception is thrown.
-
-    sub foobar : handles(foo->bar);
-
-No attempt will be made to verify that the value stored in
-C<$slot_name> is an object, or that it responds to the
-C<$delegate_method> specified, this is the responsibility of
-the writer of the class.
-
-=back
-
 =head2 EXPERIMENTAL TRAITS
 
 In order to enable these traits, you must pass the C<experimental>
-flag for L<Moxie>.
+flag for L<Moxie>. The interfaces to these traits may change until
+we settle upon one we like, use them bravely and/or sparingly.
 
 =over 4
 
@@ -531,6 +513,19 @@ applied to.
 
     sub foo : lazy { ... }
     sub foo : lazy(_foo) { ... }
+
+=item C<< handles( $slot_name->$delegate_method ) >>
+
+This will generate a simple delegate method for a slot. The
+C<$slot_name> and C<$delegate_method>, seperated by an arrow
+(C<< -> >>), must be specified or an exception is thrown.
+
+    sub foobar : handles(foo->bar);
+
+No attempt will be made to verify that the value stored in
+C<$slot_name> is an object, or that it responds to the
+C<$delegate_method> specified, this is the responsibility of
+the writer of the class.
 
 =item C<private( ?$slot_name )>
 

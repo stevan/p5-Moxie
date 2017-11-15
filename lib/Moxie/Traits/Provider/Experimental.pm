@@ -55,6 +55,25 @@ sub lazy ( $meta, $method, @args ) : OverwritesMethod {
     });
 }
 
+
+sub handles ( $meta, $method, @args ) : OverwritesMethod {
+
+    my $method_name = $method->name;
+
+    my ($slot_name, $delegate) = ($args[0] =~ /^(.*)\-\>(.*)$/);
+
+    Carp::confess('Delegation spec must be in the pattern `slot->method`, not '.$args[0])
+        unless $slot_name && $delegate;
+
+    Carp::confess('Unable to build delegation method for slot `' . $slot_name.'` in `'.$meta->name.'` because the slot cannot be found.')
+        unless $meta->has_slot( $slot_name )
+            || $meta->has_slot_alias( $slot_name );
+
+    $meta->add_method( $method_name => sub {
+        $_[0]->{ $slot_name }->$delegate( @_[ 1 .. $#_ ] );
+    });
+}
+
 sub private ( $meta, $method, @args ) {
 
     my $method_name = $method->name;

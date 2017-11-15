@@ -15,12 +15,10 @@ use Module::Runtime ();
 
 use Moxie::Traits::Provider::Accessor    ();
 use Moxie::Traits::Provider::Constructor ();
-use Moxie::Traits::Provider::Delegation  ();
 
 our @PROVIDERS = qw(
     Moxie::Traits::Provider::Accessor
     Moxie::Traits::Provider::Constructor
-    Moxie::Traits::Provider::Delegation
 );
 
 our @EXPERIMENTAL_PROVIDERS = qw(
