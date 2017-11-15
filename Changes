@@ -1,6 +1,6 @@
 Revision history for Perl extension Moxie
 
-0.07
+0.07 2017-11-16
     [ENHANCEMENTS]
     - it is now posible to say `required => 1` and have that
       expand to a default error message

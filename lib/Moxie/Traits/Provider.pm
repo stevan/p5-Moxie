@@ -8,7 +8,7 @@ use experimental qw[
     postderef
 ];
 
-our $VERSION   = '0.06';
+our $VERSION   = '0.07';
 our $AUTHORITY = 'cpan:STEVAN';
 
 use Module::Runtime ();

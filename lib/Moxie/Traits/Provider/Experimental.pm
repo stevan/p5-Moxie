@@ -15,7 +15,7 @@ use Sub::Util (); # for setting the prototype of the lexical accessors
 use PadWalker (); # for generating lexical accessors
 use MOP::Util ();
 
-our $VERSION   = '0.06';
+our $VERSION   = '0.07';
 our $AUTHORITY = 'cpan:STEVAN';
 
 sub lazy ( $meta, $method, @args ) : OverwritesMethod {
