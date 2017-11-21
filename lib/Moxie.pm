@@ -217,45 +217,45 @@ __END__
 
 L<Moxie> is a new object system for Perl 5 that aims to be a
 successor to the L<Moose> module. The goal is to provide the same
-key features of L<Moose>; syntactic sugar, common base class, slot
+key features of L<Moose>: syntactic sugar, common base class, slot
 management, role composition, accessor generation and a meta-object
-protocol – but to do it in a more straightforward and resource
-efficient way that requires lower cognative overhead.
+protocol – but to do it in a more straightforward and resource-efficient
+way that requires lower cognitive overhead.
 
-The key tenents of L<Moxie> are as follows:
+The key tenets of L<Moxie> are as follows:
 
 =head2 Aims to be ultra-modern
 
 L<Moose> was a post-modern object system, so what is after post
 modernism? Post, post modernism? Who knows, it is 2017 and instead
 of flying cars we are careening towards a dystopian timeline and
-a future that none of us can forsee. So given that, B<ultra> seemed
+a future that none of us can foresee. So given that, B<ultra> seemed
 to work as well as anything else.
 
-This tenent means that we will not shy away from new Perl features
-and we have core a commitment to helping to push the language forward.
+This tenet means that we will not shy away from new Perl features
+and we have a core commitment to helping to push the language forward.
 
 =head2 Better distinction between public & private
 
-The clean sepeartion of the public and private interfaces of your
+The clean separation of the public and private interfaces of your
 class is key to maintaining good encapsulation. This is one of the key
 features required for writing robust and reusable software that can
-resist the abuses of fellow programmers and still retain it's
+resist the abuses of fellow programmers and still retain its
 usefulness over time.
 
 =head2 Re-use existing Perl features
 
 Perl is a large language with many features, some of which are useful
 and some – I believe – people just haven't found a good use for I<yet>.
-L<Moxie> aims to use as many existing B<native> features in Perl when
+L<Moxie> aims to use as many existing B<native> features in Perl as
 possible. This can be seen as just another facet of the commitment to
 modernity mentioned above, ... it is not old, it is B<retro>!
 
-=head2 Reduce cognative burdon of the MOP
+=head2 Reduce cognitive burden of the MOP
 
-The Meta-Object protocol that powered all the L<Moose> features was
+The Meta-Object Protocol that powered all the L<Moose> features was
 large, complex and difficult to understand unless you were willing to
-put in the cognative investment. Because the MOP was the primary means
+put in the cognitive investment. Because the MOP was the primary means
 of extension for L<Moose>, this meant it was not optional if you wanted
 to extend L<Moose>. L<Moxie> instead turns the tables, such that it has
 multiple means of extension, most (but not all) of which are empowered
@@ -265,7 +265,7 @@ a L<MOP> is available.
 
 =head2 Better resource usage
 
-L<Moose> is famous for it's high startup overhead and heavy memory
+L<Moose> is famous for its high startup overhead and heavy memory
 usage. These were consequences of the way in which L<Moose> was
 implemented. With L<Moxie> we instead try to do the least amount of
 work possible so as to introduce the least amount of overhead.
@@ -327,7 +327,7 @@ this is done when C<use>ing L<Moxie> like this:
 By default L<Moxie> will enable the L<Moxie::Traits::Provider> module
 to supply this set of traits for use in L<Moxie> classes.
 
-Some traits below are listed as experimental, in order to enable those
+Some traits below are listed as experimental; in order to enable those
 traits the string C<:experimental> (with the leading colon) must appear
 in your traits list.
 
@@ -339,8 +339,8 @@ in your traits list.
 
 The way C<perl> parses C<CODE> attributes is that everything within the
 C<()> is just passed onto your code for parsing. This means that it is
-not neccesary to quote slot names within the argument list of a trait,
-and all examples (eventually) will confrom to this syntax. This is a matter
+not necessary to quote slot names within the argument list of a trait,
+and all examples (eventually) will conform to this syntax. This is a matter
 of choice, do as you prefer, but I promise you there is no additional
 safety or certainty you get from quoting slot names in trait arguments.
 
@@ -353,7 +353,7 @@ safety or certainty you get from quoting slot names in trait arguments.
 This is a trait that is exclusively applied to the C<BUILDARGS>
 method. This is a means for generating a strict interface for the
 C<BUILDARGS> method that will map a set of constructor parameters
-to a set of given slots, this is useful for maintaining encapsulation
+to a set of given slots. This is useful for maintaining encapsulation
 for things like a private slot with a different public name.
 
     # declare a slot with a private name
@@ -506,8 +506,8 @@ we settle upon one we like, use them bravely and/or sparingly.
 
 This will transform the associated subroutine into a lazy read-only
 accessor for a slot. The body of the subroutine is expected to be
-the initializer for the slot and will receive the instance as it's
-first arguemnt. The C<$slot_name> can optionally be specified,
+the initializer for the slot and will receive the instance as its
+first argument. The C<$slot_name> can optionally be specified,
 otherwise it will use the name of the method that the trait is being
 applied to.
 
@@ -517,14 +517,14 @@ applied to.
 =item C<< handles( $slot_name->$delegate_method ) >>
 
 This will generate a simple delegate method for a slot. The
-C<$slot_name> and C<$delegate_method>, seperated by an arrow
+C<$slot_name> and C<$delegate_method>, separated by an arrow
 (C<< -> >>), must be specified or an exception is thrown.
 
     sub foobar : handles(foo->bar);
 
 No attempt will be made to verify that the value stored in
 C<$slot_name> is an object, or that it responds to the
-C<$delegate_method> specified, this is the responsibility of
+C<$delegate_method> specified; this is the responsibility of
 the writer of the class.
 
 =item C<private( ?$slot_name )>
@@ -588,7 +588,7 @@ mostly for method generation (accessors, predicates, etc.).
 
 =head1 FEATURES ENABLED
 
-This module enabled a number of features in Perl which are
+This module enables a number of features in Perl which are
 currently considered experimental, see the L<experimental>
 module for more information.
 
@@ -616,8 +616,8 @@ module for more information.
 
 =head1 PRAGMAS ENABLED
 
-We enabled both the L<strict> and L<warnings> pragmas, but we disable the
-C<reserved> warning so that we can use lowercase CODE attributes with
+We enable both the L<strict> and L<warnings> pragmas, but we disable the
+C<reserved> warning so that we can use lowercase C<CODE> attributes with
 L<Method::Traits>.
 
 =over 4
@@ -629,8 +629,3 @@ L<Method::Traits>.
 =back
 
 =cut
-
-
-
-
-
