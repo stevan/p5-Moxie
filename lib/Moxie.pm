@@ -448,11 +448,11 @@ If the method name is prefixed with C<set_>, then this trait will
 infer that the slot name intended is the remainder of the method's
 name, minus the C<set_> prefix, such that this:
 
-    sub set_foo : ro;
+    sub set_foo : wo;
 
 Is the equivalent of writing this:
 
-    sub set_foo : ro(foo);
+    sub set_foo : wo(foo);
 
 =item C<predicate( ?$slot_name )>
 
@@ -467,11 +467,11 @@ If the method name is prefixed with C<has_>, then this trait will
 infer that the slot name intended is the remainder of the method's
 name, minus the C<has_> prefix, such that this:
 
-    sub has_foo : ro;
+    sub has_foo : predicate;
 
 Is the equivalent of writing this:
 
-    sub has_foo : ro(foo);
+    sub has_foo : predicate(foo);
 
 =item C<clearer( ?$slot_name )>
 
@@ -486,11 +486,11 @@ If the method name is prefixed with C<clear_>, then this trait will
 infer that the slot name intended is the remainder of the method's
 name, minus the C<clear_> prefix, such that this:
 
-    sub clear_foo : ro;
+    sub clear_foo : clearer;
 
 Is the equivalent of writing this:
 
-    sub clear_foo : ro(foo);
+    sub clear_foo : clearer(foo);
 
 =back
 
