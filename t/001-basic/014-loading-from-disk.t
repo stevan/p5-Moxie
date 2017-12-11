@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 
-use Test::More;
+use File::Basename ();
+use File::Spec     ();
+use lib File::Spec->catdir( File::Spec->rel2abs( File::Basename::dirname(__FILE__) ), '../lib' );
 
-use FindBin;
-use lib "$FindBin::Bin/../lib";
+use Test::More;
 
 use Foo::Bar;
 

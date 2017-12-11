@@ -2,6 +2,9 @@ Revision history for Perl extension Moxie
 
 0.08
     - some small types fixed by Aaron Crane
+    - fixed the `use lib` in a few tests so that they can
+      be run from any location
+        - thanks to Tom Legrady for this fix
 
 0.07 2017-11-16
     [ENHANCEMENTS]

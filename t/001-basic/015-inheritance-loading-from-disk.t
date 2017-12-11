@@ -3,9 +3,11 @@
 use strict;
 use warnings;
 
-use Test::More;
+use File::Basename ();
+use File::Spec     ();
+use lib File::Spec->catdir( File::Spec->rel2abs( File::Basename::dirname(__FILE__) ), '../lib' );
 
-use lib 't/lib';
+use Test::More;
 
 use_ok 'Level3', '... use Level3 works';
 
